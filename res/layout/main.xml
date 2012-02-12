@@ -8,14 +8,40 @@
     <!--  
         Production
             android:apiKey="0RmcvHWXJEDRMbSw0EfkJYSny7WrCkfH1fOgUNw"  -->
+
+    <TableLayout 
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content" 
+        android:stretchColumns="0">            
+
+        <TableRow>
+            <EditText
+                android:id="@+id/map_search_field"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPostalAddress" 
+                android:hint="@string/map_search_field_hint"
+                >
+            </EditText>
+            
+            <Button 
+                android:id="@+id/map_search_field_button" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search"
+                />
+            
+        </TableRow>
+        
+    </TableLayout>
     
     <com.google.android.maps.MapView
+        android:id="@+id/mapview" 
         android:layout_width="fill_parent" 
         android:layout_height="fill_parent"
         android:enabled="true"
         android:clickable="true"
         android:apiKey="0RmcvHWXJEDQsRzl6umJCrNRcBxfSUl-PZ6mVMw"
-        android:id="@+id/mapview" 
         />
 
 </LinearLayout>

@@ -3,5 +3,7 @@
 
     <string name="hello">Hello World, ZeframActivity!</string>
     <string name="app_name">Zefram</string>
+    <string name="search">Search</string>
+    <string name="map_search_field_hint">Search or Address</string>
 
 </resources>
