@@ -1,11 +1,14 @@
 package com.viapx.zefram;
 
+import java.util.List;
+
 import com.google.android.maps.GeoPoint;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
+import com.google.android.maps.Overlay;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -20,11 +23,7 @@ import android.widget.Toast;
 
 import com.viapx.zefram.lib.*;
 
-import de.android1.overlaymanager.ManagedOverlay;
-import de.android1.overlaymanager.ManagedOverlayGestureDetector;
-import de.android1.overlaymanager.ManagedOverlayItem;
-import de.android1.overlaymanager.OverlayManager;
-import de.android1.overlaymanager.ZoomEvent;
+import android.view.GestureDetector.OnGestureListener;
 
 /**
  * 
@@ -33,6 +32,11 @@ import de.android1.overlaymanager.ZoomEvent;
  * @see http://stackoverflow.com/questions/1678493/android-maps-how-to-long-click-a-map
  * @see http://stackoverflow.com/questions/4646584/how-to-get-lat-and-long-on-touch-event-from-goole-map
  * @see http://code.google.com/p/mapview-overlay-manager/source/browse/trunk/OverlayManager/src/de/android1/overlaymanager/OverlayManager.java
+ * @see http://stackoverflow.com/questions/2176397/drawing-a-line-path-on-google-maps
+ * 
+ * 
+ * 
+ * http://stackoverflow.com/questions/3605219/default-marker-for-android-google-mapview
  */
 public class ZeframActivity extends MapActivity
 {
@@ -43,8 +47,6 @@ public class ZeframActivity extends MapActivity
     private MapController mapController;
 
     private MyLocationOverlay userLocationOverlay;
-    
-    private OverlayManager overlayManager;
 
     /** Called when the activity is first created. */
     @Override
@@ -62,27 +64,37 @@ public class ZeframActivity extends MapActivity
         // Get our controller
         mapController = mapView.getController();
         
-        //Get our overlay manager (see http://code.google.com/p/mapview-overlay-manager/)
-        overlayManager = new OverlayManager(getApplication(), mapView);
-        ManagedOverlay managedOverlay = overlayManager.createOverlay("zeframOverlay", getResources().getDrawable(R.drawable.pushpin_green));
-        managedOverlay.setOnOverlayGestureListener(new ManagedOverlayGestureDetector.OnOverlayGestureListener() {
+        // Set a reasonable zoom level
+        mapController.setZoom(18);
+        mapView.setClickable(true);
+        mapView.setEnabled(true);
+        
+        //The first overlay has to be our gesture detection overlay
+        Overlay gestureOverlay = new OverlayGestureDetector(new OnGestureListener(){
 
             @Override
-            public boolean onDoubleTap(MotionEvent arg0, ManagedOverlay arg1, GeoPoint arg2, ManagedOverlayItem arg3)
+            public boolean onDown(MotionEvent e)
             {
                 // TODO Auto-generated method stub
                 return false;
             }
 
             @Override
-            public void onLongPress(MotionEvent event, ManagedOverlay overlay)
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
             {
-                int x = (int)event.getX();
-                int y = (int)event.getY();
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e)
+            {
+                int x = (int)e.getX();
+                int y = (int)e.getY();
                 
                 GeoPoint geoPoint = mapView.getProjection().fromPixels(x, y);
                 
-                overlay.createItem(geoPoint);
+                Toast.makeText(getApplicationContext(), "Clicked at " + x + ", " + y, Toast.LENGTH_SHORT).show();
                 
                 
                 //Toast.makeText(getApplicationContext(), "LongPress incoming...!", Toast.LENGTH_SHORT).show();
@@ -91,40 +103,28 @@ public class ZeframActivity extends MapActivity
             }
 
             @Override
-            public void onLongPressFinished(MotionEvent arg0, ManagedOverlay arg1, GeoPoint arg2, ManagedOverlayItem arg3)
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+            {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e)
             {
                 // TODO Auto-generated method stub
                 
             }
 
             @Override
-            public boolean onScrolled(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3, ManagedOverlay arg4)
-            {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public boolean onSingleTap(MotionEvent arg0, ManagedOverlay arg1, GeoPoint arg2, ManagedOverlayItem arg3)
-            {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            @Override
-            public boolean onZoom(ZoomEvent arg0, ManagedOverlay arg1)
+            public boolean onSingleTapUp(MotionEvent e)
             {
                 // TODO Auto-generated method stub
                 return false;
             }
             
         });
-        overlayManager.populate();
-        
-        // Set a reasonable zoom level
-        mapController.setZoom(18);
-        mapView.setClickable(true);
-        mapView.setEnabled(true);
+        mapView.getOverlays().add(gestureOverlay);
 
         // Let's lay over the user's current location
         userLocationOverlay = new MyLocationOverlay(this, mapView);
