@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.viapx.zefram.lib.*;
+import com.viapx.zefram.overlays.GestureDetectorOverlay;
 
 import android.view.GestureDetector.OnGestureListener;
 
@@ -70,7 +71,7 @@ public class ZeframActivity extends MapActivity
         mapView.setEnabled(true);
         
         //The first overlay has to be our gesture detection overlay
-        Overlay gestureOverlay = new OverlayGestureDetector(new OnGestureListener(){
+        Overlay gestureOverlay = new GestureDetectorOverlay(new OnGestureListener(){
 
             @Override
             public boolean onDown(MotionEvent e)
