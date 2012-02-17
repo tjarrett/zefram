@@ -1,7 +1,5 @@
 package com.viapx.zefram;
 
-import java.util.List;
-
 import com.google.android.maps.GeoPoint;
 
 import com.google.android.maps.MapActivity;
@@ -10,11 +8,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +17,7 @@ import android.widget.Toast;
 
 import com.viapx.zefram.lib.*;
 import com.viapx.zefram.overlays.GestureDetectorOverlay;
+import com.viapx.zefram.overlays.LocationsOverlay;
 
 import android.view.GestureDetector.OnGestureListener;
 
@@ -48,6 +43,8 @@ public class ZeframActivity extends MapActivity
     private MapController mapController;
 
     private MyLocationOverlay userLocationOverlay;
+    
+    private LocationsOverlay locationsOverlay;
 
     /** Called when the activity is first created. */
     @Override
@@ -96,6 +93,9 @@ public class ZeframActivity extends MapActivity
                 GeoPoint geoPoint = mapView.getProjection().fromPixels(x, y);
                 
                 Toast.makeText(getApplicationContext(), "Clicked at " + x + ", " + y, Toast.LENGTH_SHORT).show();
+                
+                Location location = new Location(geoPoint, "Thing at " + x + "," + y, "Snippit..."); 
+                locationsOverlay.add(location);
                 
                 
                 //Toast.makeText(getApplicationContext(), "LongPress incoming...!", Toast.LENGTH_SHORT).show();
@@ -149,8 +149,12 @@ public class ZeframActivity extends MapActivity
         userLocationOverlay.enableMyLocation();
         
         //Get our drawable icon
-        Drawable marker = getResources().getDrawable(R.drawable.pushpin_green);
+        Drawable marker = getResources().getDrawable(R.drawable.marker);
         marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+        
+        //Now add our locations overlay...
+        locationsOverlay = new LocationsOverlay(marker);
+        mapView.getOverlays().add(locationsOverlay);
         
         //mapView.getOverlays().add(new GeoFenceOverlay(marker)); 
 
