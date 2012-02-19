@@ -4,6 +4,9 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="/Users/tjarrett/Projects/Mobile/Libraries/overlaymanager-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/tjarrett/Projects/Mobile/Libraries/3rd Party/ormlite-android-4.33.jar"/>
+	<classpathentry kind="lib" path="/Users/tjarrett/Projects/Mobile/Libraries/3rd Party/ormlite-core-4.33.jar"/>
+	<classpathentry kind="lib" path="/Users/tjarrett/Projects/Mobile/Libraries/3rd Party/ormlite-android-4.33-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/tjarrett/Projects/Mobile/Libraries/3rd Party/ormlite-core-4.33-javadoc.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -1,26 +1,27 @@
 package com.viapx.zefram.lib;
 
+import java.util.List;
+
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.OverlayItem;
 
-public class Location extends OverlayItem
+/**
+ * Represents a location
+ * @author tjarrett
+ *
+ */
+public class Location
 {
-    private GeoPoint point;
+    private int _id;
     
-    private String title;
+    private String name;
     
-    private String snippet;
+    private GeoPoint geoPoint;
     
-    public Location(GeoPoint point, String title, String snippet)
-    {
-        super(point, title, snippet);
-        
-        this.point = point;
-        
-        this.title = title;
-        
-        this.snippet = snippet;
-        
-    }
+    private int radius;
+    
+    private boolean active;
+    
+    private List<LocationEvent> events;
+    
 
-}
+}//end Location

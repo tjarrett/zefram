@@ -94,7 +94,7 @@ public class ZeframActivity extends MapActivity
                 
                 Toast.makeText(getApplicationContext(), "Clicked at " + x + ", " + y, Toast.LENGTH_SHORT).show();
                 
-                Location location = new Location(geoPoint, "Thing at " + x + "," + y, "Snippit..."); 
+                LocationOverlayItem location = new LocationOverlayItem(geoPoint, "Thing at " + x + "," + y, "Snippit..."); 
                 locationsOverlay.add(location);
                 
                 

@@ -8,32 +8,34 @@ import android.graphics.drawable.Drawable;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
-import com.viapx.zefram.lib.Location;
+import com.viapx.zefram.lib.LocationOverlayItem;
 
 /**
  * 
  * @author tjarrett
  * @see https://github.com/commonsguy/cw-advandroid/blob/master/Maps/NooYawkTouch/src/com/commonsware/android/maptouch/NooYawk.java
  */
-public class LocationsOverlay extends ItemizedOverlay<Location>
+public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
 {
-    private List<Location> items = new ArrayList<Location>();
+    private List<LocationOverlayItem> items = new ArrayList<LocationOverlayItem>();
     
     public LocationsOverlay(Drawable defaultMarker)
     {
         super(defaultMarker);
-        // TODO Auto-generated constructor stub
+        
+        //Gotta call populate() before anything else can happen... since it's protected... easy to just call it here...
+        //http://code.google.com/p/android/issues/detail?id=2035
         populate();
     }
     
-    public void add(Location location)
+    public void add(LocationOverlayItem location)
     {
         items.add(location);
         populate();
     }
 
     @Override
-    protected Location createItem(int i)
+    protected LocationOverlayItem createItem(int i)
     {
         return items.get(i);
         
