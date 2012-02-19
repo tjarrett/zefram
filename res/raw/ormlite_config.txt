@@ -1,0 +1,29 @@
+#
+# generated on 2012/02/19 11:12:00
+#
+# --table-start--
+dataClass=com.viapx.zefram.lib.Location
+tableName=locations
+# --table-fields-start--
+# --field-start--
+fieldName=id
+id=true
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=latitude
+# --field-end--
+# --field-start--
+fieldName=lonitude
+# --field-end--
+# --field-start--
+fieldName=radius
+# --field-end--
+# --field-start--
+fieldName=active
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
