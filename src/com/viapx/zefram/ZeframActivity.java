@@ -7,15 +7,17 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.viapx.zefram.lib.*;
+import com.viapx.zefram.lib.db.DatabaseHelper;
 import com.viapx.zefram.overlays.GestureDetectorOverlay;
 import com.viapx.zefram.overlays.LocationsOverlay;
 
@@ -36,15 +38,30 @@ import android.view.GestureDetector.OnGestureListener;
  */
 public class ZeframActivity extends MapActivity
 {
+    /**
+     * The MapView
+     */
     private MapView mapView;
 
-    private LocationManager locationManager;
-
+    /**
+     * The controller for MapView
+     */
     private MapController mapController;
 
+    /**
+     * The built-in MyLocation MapView overlay (show's current location)
+     */
     private MyLocationOverlay userLocationOverlay;
     
+    /**
+     * The zefram locations overlay (for showing locations that the user has configured)
+     */
     private LocationsOverlay locationsOverlay;
+    
+    /**
+     * The DatabaseHelper for access our SQLite database
+     */
+    private DatabaseHelper databaseHelper = null;
 
     /** Called when the activity is first created. */
     @Override
@@ -52,6 +69,9 @@ public class ZeframActivity extends MapActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        //Get our database helper
+        getHelper();
 
         // Get our map view
         mapView = (MapView)findViewById(R.id.mapview);
@@ -182,6 +202,23 @@ public class ZeframActivity extends MapActivity
         
     }//end onPause
 
+    /* (non-Javadoc)
+     * @see com.google.android.maps.MapActivity#onDestroy()
+     */
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        
+        //Clean up our database
+        if ( databaseHelper != null ) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+            
+        }
+        
+    }//end onDestroy
+
     @Override
     protected boolean isRouteDisplayed()
     {
@@ -189,5 +226,20 @@ public class ZeframActivity extends MapActivity
         return false;
         
     }//end isRouteDisplayed
+    
+    /**
+     * Get the OrmLite database helper for this Android project
+     * @return
+     */
+    private OrmLiteSqliteOpenHelper getHelper()
+    {
+        if ( databaseHelper != null ) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+            
+        }
+        
+        return databaseHelper;
+        
+    }//end getHelper
 
-}
+}//end ZeframActivity
