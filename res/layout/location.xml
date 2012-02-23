@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/location_name_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:hint="@string/location_name_field_hint"
+            >
+
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/location_label"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+        
+        <com.google.android.maps.MapView
+            android:id="@+id/mapview"
+            android:layout_width="fill_parent"
+            android:layout_height="120dp"
+            android:apiKey="0RmcvHWXJEDQsRzl6umJCrNRcBxfSUl-PZ6mVMw"
+            android:clickable="true"
+            android:enabled="true" />
+            
+        <View 
+           android:layout_width="fill_parent"
+           android:layout_height="2dp"       
+           android:background="#FF96979E" 
+           android:layout_marginTop="20dp" 
+           android:layout_marginBottom="20dp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/radius_label"
+                android:textAppearance="?android:attr/textAppearanceLarge" 
+                android:layout_marginRight="5dp" />
+
+            <Spinner
+                android:id="@+id/location_radius_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+            </Spinner>
+
+        </LinearLayout>
+        
+        <View 
+           android:layout_width="fill_parent"
+           android:layout_height="2dp"       
+           android:background="#FF96979E" 
+           android:layout_marginTop="20dp" 
+           android:layout_marginBottom="20dp" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/events_label"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+        
+    </LinearLayout>
+
+</ScrollView>
