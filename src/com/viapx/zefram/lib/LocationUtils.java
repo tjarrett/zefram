@@ -43,6 +43,5 @@ public class LocationUtils
         mapController.animateTo(geoPoint);
         
     }//end centerMapViewOnLocation
-    
 
 }//end LocationUtils

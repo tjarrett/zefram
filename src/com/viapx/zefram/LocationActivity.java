@@ -2,6 +2,7 @@ package com.viapx.zefram;
 
 import java.sql.SQLException;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -37,6 +38,8 @@ public class LocationActivity extends MapActivity
 {   
     static final int DIALOG_LOCATION_NAME_INVALID = 0;
     
+    static final int INTENT_RESULT_LOCATION = 0;
+    
     /**
      * 
      */
@@ -63,6 +66,10 @@ public class LocationActivity extends MapActivity
     private Spinner locationRadiusField;
 
     private String action;
+
+    private MapView mapView;
+
+    private MapController mapController;
     
     /** Called when the activity is first created. */
     @Override
@@ -85,17 +92,29 @@ public class LocationActivity extends MapActivity
             @Override
             public void onClick(View view)
             {
-                LocationActivity.this.saveLocation();                
+                LocationActivity.this.saveLocation();     
+                LocationActivity.this.finish();
                 
             }
             
         });
         
-        // Get our map view
-        MapView mapView = (MapView)findViewById(R.id.mapview);
+        //Wire up the Cancel button
+        Button cancelButton = (Button)findViewById(R.id.location_cancel_button);
+        cancelButton.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View view)
+            {
+                LocationActivity.this.finish();
+                
+            }
+            
+        });
         
-        // Get our controller
-        MapController mapController = mapView.getController();
+        mapView = (MapView)findViewById(R.id.mapview);
+        
+        mapController = mapView.getController();
         
         // Set a reasonable zoom level
         mapController.setZoom(19);
@@ -186,14 +205,15 @@ public class LocationActivity extends MapActivity
             public boolean onSingleTapUp(MotionEvent e)
             {
                 // TODO Auto-generated method stub
-                Toast.makeText(getApplicationContext(), "Single tap on map", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Single tap on map", Toast.LENGTH_LONG).show();
+                //Call the "Edit" activity explicitly
+                Intent i = new Intent(LocationActivity.this, ZeframActivity.class);
+                startActivityForResult(i, INTENT_RESULT_LOCATION); 
                 return true;
             }
             
         });
         mapView.getOverlays().add(gestureOverlay);
-        
-
 
     }//end onCreate
     
@@ -257,6 +277,36 @@ public class LocationActivity extends MapActivity
         return super.onMenuItemSelected(featureId, item);
         
     }//end onMenuItemSelected 
+    
+    /**
+     * 
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+    {
+        if ( requestCode == INTENT_RESULT_LOCATION ) {
+            if ( resultCode == RESULT_OK ) {
+                //A location was picked
+                int longitude = data.getExtras().getInt("longitude");
+                int latitude = data.getExtras().getInt("latitude");
+                
+                //Update the object
+                location.setLatitude(latitude);
+                location.setLongitude(longitude);
+                
+                //Move the map
+                GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                mapController.animateTo(geoPoint);
+                
+                
+            }
+            
+        }
+        
+    }//end onActivityResult
+
     
     /**
      * 

@@ -10,6 +10,8 @@ import com.google.android.maps.Overlay;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -109,10 +111,16 @@ public class ZeframActivity extends MapActivity
                 
                 GeoPoint geoPoint = mapView.getProjection().fromPixels(x, y);
                 
-                Toast.makeText(getApplicationContext(), "Clicked at " + x + ", " + y, Toast.LENGTH_SHORT).show();
+                Intent result = new Intent();
+                result.putExtra("latitude", geoPoint.getLatitudeE6());
+                result.putExtra("longitude", geoPoint.getLongitudeE6());
+                
+                setResult(Activity.RESULT_OK, result); 
+                finish();
+                /*Toast.makeText(getApplicationContext(), "Clicked at " + x + ", " + y, Toast.LENGTH_SHORT).show();
                 
                 LocationOverlayItem location = new LocationOverlayItem(geoPoint, "Thing at " + x + "," + y, "Snippit..."); 
-                locationsOverlay.add(location);
+                locationsOverlay.add(location);*/
                 
                 
                 //Toast.makeText(getApplicationContext(), "LongPress incoming...!", Toast.LENGTH_SHORT).show();
