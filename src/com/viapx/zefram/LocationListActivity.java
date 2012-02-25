@@ -1,3 +1,5 @@
+//http://developer.android.com/guide/topics/location/obtaining-user-location.html
+
 package com.viapx.zefram;
 
 import java.sql.SQLException;
@@ -8,17 +10,22 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.StatementBuilder;
 import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.CursorAdapter;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -48,6 +55,73 @@ public class LocationListActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_list);
         
+        //Try to find our current location
+        final LocationManager locationManager = (LocationManager)getSystemService(this.getApplicationContext().LOCATION_SERVICE);
+        LocationListener locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(android.location.Location arg0)
+            {
+                locationManager.removeUpdates(this);
+                
+            }
+
+            @Override
+            public void onProviderDisabled(String arg0)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onProviderEnabled(String arg0)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onStatusChanged(String arg0, int arg1, Bundle arg2)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+            
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        
+        
+        locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(android.location.Location arg0)
+            {
+                locationManager.removeUpdates(this);
+                
+            }
+
+            @Override
+            public void onProviderDisabled(String arg0)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onProviderEnabled(String arg0)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onStatusChanged(String arg0, int arg1, Bundle arg2)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+        };
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         
     }//end onCreate
     
@@ -90,6 +164,21 @@ public class LocationListActivity extends Activity
         //Still here? Then we got the cursor that we need...
         ListView locationList = (ListView)findViewById(R.id.location_list);
         locationList.setAdapter(locationListAdapter);
+        
+        locationList.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                //Call the "Edit" activity explicitly
+                Intent i = new Intent(LocationListActivity.this, LocationActivity.class);
+                i.putExtra("action", "edit");
+                i.putExtra("location_id", id);
+                startActivity(i); 
+                
+            }
+            
+        });
         
         super.onStart();
         
@@ -143,6 +232,25 @@ public class LocationListActivity extends Activity
         return true;
         
     }//end onCreateOptionsMenu
+    
+    /**
+     * Listen for and handle an item selected in our menu
+     */
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item)
+    {
+        switch ( item.getItemId() ) {
+            case R.id.menu_create_location:
+                //Call the "Edit" activity explicitly
+                Intent i = new Intent(LocationListActivity.this, LocationActivity.class);
+                i.putExtra("action", "add");
+                startActivity(i); 
+                return true;
+        }//end switch
+        
+        return super.onMenuItemSelected(featureId, item);
+        
+    }//end onMenuItemSelected 
     
     /**
      * Get the OrmLite database helper for this Android project

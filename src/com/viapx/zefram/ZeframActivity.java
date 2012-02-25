@@ -68,10 +68,7 @@ public class ZeframActivity extends MapActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        //Get our database helper
-        getHelper();
+        setContentView(R.layout.mapview);
 
         // Get our map view
         mapView = (MapView)findViewById(R.id.mapview);
@@ -226,20 +223,5 @@ public class ZeframActivity extends MapActivity
         return false;
         
     }//end isRouteDisplayed
-    
-    /**
-     * Get the OrmLite database helper for this Android project
-     * @return
-     */
-    private OrmLiteSqliteOpenHelper getHelper()
-    {
-        if ( databaseHelper != null ) {
-            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-            
-        }
-        
-        return databaseHelper;
-        
-    }//end getHelper
 
 }//end ZeframActivity
