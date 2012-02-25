@@ -17,9 +17,13 @@ import com.viapx.zefram.overlays.GestureDetectorOverlay;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.View;
@@ -57,6 +61,8 @@ public class LocationActivity extends MapActivity
      * 
      */
     private Spinner locationRadiusField;
+
+    private String action;
     
     /** Called when the activity is first created. */
     @Override
@@ -107,8 +113,7 @@ public class LocationActivity extends MapActivity
             
         }
         
-        //We'll need these down below        
-        String action = getIntent().getExtras().getString("action");
+        action = getIntent().getExtras().getString("action");
         if ( "edit".equals(action) ) {
             //Get the ID from the intent
             int location_id = (int)getIntent().getExtras().getLong("location_id");
@@ -218,6 +223,41 @@ public class LocationActivity extends MapActivity
         
     }//end onCreateDialog
     
+    /* (non-Javadoc)
+     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        if ( "edit".equals(action) ) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.location, menu);
+            return true;
+            
+        }
+        
+        return false;
+        
+    }//end onCreateOptionsMenu
+    
+    /**
+     * Listen for and handle an item selected in our menu
+     */
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item)
+    {
+        switch ( item.getItemId() ) {
+            case R.id.menu_delete_location:
+                deleteLocation();
+                finish();
+                break;
+                
+        }//end switch
+        
+        return super.onMenuItemSelected(featureId, item);
+        
+    }//end onMenuItemSelected 
+    
     /**
      * 
      */
@@ -245,6 +285,19 @@ public class LocationActivity extends MapActivity
         
         
     }//end saveLocation
+    
+    private void deleteLocation()
+    {
+        try {
+            locationDao.delete(location);
+            
+        } catch ( SQLException sqle ) {
+            Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+            throw new RuntimeException(sqle); 
+            
+        }
+        
+    }
     
     /**
      * Get the OrmLite database helper for this Android project

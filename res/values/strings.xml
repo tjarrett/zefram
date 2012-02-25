@@ -13,5 +13,5 @@
     <string name="events_label">Events</string>
     <string name="location_done_button_text">Done</string>
     <string name="location_cancel_button_text">Cancel</string>
-     
+    <string name="menu_delete_location">Delete</string>
 </resources>
