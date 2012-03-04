@@ -55,6 +55,12 @@ public class LocationListActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_list);
         
+        //Start-up our service if it's not already running...
+        if ( !ZeframProximityService.isServiceStarted() ) {
+            startService(new Intent(this, ZeframProximityService.class));
+            
+        }
+        
         //Try to find our current location
         final LocationManager locationManager = (LocationManager)getSystemService(this.getApplicationContext().LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
