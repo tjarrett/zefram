@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/> 
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -42,7 +43,7 @@
             Register the receiver that starts our service
             See http://www.vogella.de/articles/AndroidServices/article.html
          -->
-        <receiver android:name="SystemStartupReceiver">
+        <receiver android:name=".SystemStartupReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE"></action>
             </intent-filter>
@@ -52,7 +53,7 @@
             Register our service
             See http://www.vogella.de/articles/AndroidServices/article.html
          -->
-        <service android:name="ZeframProximityService" android:process=":my_process"></service>
+        <service android:name=".ZeframLocationRegistrationService" android:process=":my_process"></service>
         
         <uses-library android:name="com.google.android.maps" />
         

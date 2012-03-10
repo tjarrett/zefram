@@ -18,7 +18,7 @@ public class SystemStartupReceiver extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         Log.d(Z.TAG, "In system startup receiver");
-        Intent service = new Intent(context, ZeframProximityService.class);
+        Intent service = new Intent(context, ZeframLocationRegistrationService.class);
         context.startService(service);
 
     }//end onReceive

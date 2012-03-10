@@ -35,9 +35,7 @@ import android.widget.SimpleCursorAdapter;
  *
  */
 public class LocationListActivity extends Activity
-{
-    private static final String TAG = "Tim";
-    
+{    
     /**
      * The DatabaseHelper for access our SQLite database
      */
@@ -50,14 +48,18 @@ public class LocationListActivity extends Activity
     
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_list);
         
         //Start-up our service if it's not already running...
-        if ( !ZeframProximityService.isServiceStarted() ) {
-            startService(new Intent(this, ZeframProximityService.class));
+        if ( !ZeframLocationRegistrationService.getInstance() ) {
+            startService(new Intent(this, ZeframLocationRegistrationService.class));
+            Log.d(Z.TAG, "Started the ZeframLocationRegistrationService");
+            
+        } else {
+            Log.d(Z.TAG, "ZeframLocationRegistrationService already running...");
             
         }
         
