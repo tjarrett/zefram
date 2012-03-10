@@ -1,6 +1,8 @@
 package com.viapx.zefram;
 
 import java.sql.SQLException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -30,6 +32,8 @@ public class ZeframLocationRegistrationService extends Service
     
     static public final int MSG_UNREGISTER_LOCATION = 1;
     
+    private Timer timer = new Timer();
+    
     /**
      * The DatabaseHelper for access our SQLite database
      */
@@ -51,6 +55,9 @@ public class ZeframLocationRegistrationService extends Service
      */
     private static ZeframLocationRegistrationService instance = null;
     
+    /**
+     * Messenger for interacting with this service
+     */
     private final Messenger messenger = new Messenger(new Handler() {
 
         /* (non-Javadoc)
@@ -59,13 +66,34 @@ public class ZeframLocationRegistrationService extends Service
         @Override
         public void handleMessage(Message msg)
         {
+            Log.d(Z.TAG, "handling message...");
+            Location location;
+            
             switch ( msg.what ) {
-                case MSG_REGISTER_LOCATION:
-                    addProximityAlertForLocation((Location)msg.obj);
+                case MSG_REGISTER_LOCATION:                        
+                    try {
+                        location = locationDao.queryForId(msg.arg1);
+                        
+                    } catch ( SQLException sqle ) {
+                        Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+                        throw new RuntimeException(sqle);  
+                        
+                    }
+                    
+                    addProximityAlertForLocation(location);
                     break;
                     
-                case MSG_UNREGISTER_LOCATION:
-                    removeProximityAlertForLocation((Location)msg.obj);
+                case MSG_UNREGISTER_LOCATION:                    
+                    try {
+                        location = locationDao.queryForId(msg.arg1);
+                        
+                    } catch ( SQLException sqle ) {
+                        Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+                        throw new RuntimeException(sqle); 
+                        
+                    }
+                    
+                    removeProximityAlertForLocation(location);
                     break;
              
                 default:
@@ -78,26 +106,45 @@ public class ZeframLocationRegistrationService extends Service
     });
     
     /**
-     * Returns true if the service is running, false otherwise
+     * Returns an instance of this service if it is running, false otherwise
      * @return
      */
-    public static boolean getInstance()
+    public static ZeframLocationRegistrationService getInstance()
     {
-        return instance != null;
+        return instance;
         
     }//end isInstanceCreated
     
-    private void addProximityAlertForLocation(Location location)
+    /**
+     * Returns true if the service is running, false otherwise
+     * @return
+     */
+    public static boolean isRunning()
+    {
+        return instance != null;
+        
+    }//end isRunning
+    
+    /**
+     * Add a proximity alert for the given location
+     * 
+     * @param location
+     */
+    public void addProximityAlertForLocation(Location location)
     {
         Log.d(Z.TAG, "Adding proximity detection for location: " + location.getName());
         
-    }
+    }//end addProximityAlertForLocation
     
-    private void removeProximityAlertForLocation(Location location)
+    /**
+     * Remove the proximity alert for the given location
+     * @param location
+     */
+    public void removeProximityAlertForLocation(Location location)
     {
         Log.d(Z.TAG, "Removing proximity detection for location: " + location.getName());
         
-    }
+    }//end removeProximityAlertForLocation
     
     /**
      * Enables proximity alerts for all locations -- called in onCreate
@@ -120,7 +167,7 @@ public class ZeframLocationRegistrationService extends Service
     @Override
     public IBinder onBind(Intent intent)
     {
-        return binder;
+        return messenger.getBinder();
         
     }//end onBind
     
@@ -139,7 +186,7 @@ public class ZeframLocationRegistrationService extends Service
         
         //Now get the data access object
         try {
-            locationDao = databaseHelper.getDao(Location.class);
+            locationDao = databaseHelper.getDao(Location.class); 
             
         } catch ( SQLException sqle ) {
             Log.e(Z.TAG, "Could not get location dao", sqle);
@@ -147,14 +194,29 @@ public class ZeframLocationRegistrationService extends Service
             
         }
         
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run()
+            {
+                Log.d(Z.TAG, "Service still running...");
+                
+            }}, 0, 1500);
+        
         //Initialize proximity alerts
         initProximityAlerts();
         
     }//end onCreate
     
+    /**
+     * Called by the system every time a client explicitly starts the service by calling startService(Intent), 
+     * providing the arguments it supplied and a unique integer token representing the start request. Do not call this method directly. 
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        instance = this;
+        
         Log.d(Z.TAG, "ZeframLocationRegistrationService received start id " + startId + ":" + intent);
         
         //We want this service to keep running until explicitly stopped... 
@@ -162,6 +224,9 @@ public class ZeframLocationRegistrationService extends Service
         
     }//end onStartCommand
     
+    /**
+     * Called when the service is destroyed
+     */
     @Override
     public void onDestroy()
     {

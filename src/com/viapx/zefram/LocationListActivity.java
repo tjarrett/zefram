@@ -54,7 +54,7 @@ public class LocationListActivity extends Activity
         setContentView(R.layout.location_list);
         
         //Start-up our service if it's not already running...
-        if ( !ZeframLocationRegistrationService.getInstance() ) {
+        if ( !ZeframLocationRegistrationService.isRunning() ) {
             startService(new Intent(this, ZeframLocationRegistrationService.class));
             Log.d(Z.TAG, "Started the ZeframLocationRegistrationService");
             

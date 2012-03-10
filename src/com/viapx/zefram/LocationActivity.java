@@ -17,10 +17,17 @@ import com.viapx.zefram.overlays.GestureDetectorOverlay;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -65,11 +72,43 @@ public class LocationActivity extends MapActivity
      */
     private Spinner locationRadiusField;
 
+    /**
+     * 
+     */
     private String action;
 
+    /**
+     * 
+     */
     private MapView mapView;
 
+    /**
+     * 
+     */
     private MapController mapController;
+    
+    /**
+     * 
+     */
+    private Messenger locationService = null;
+    
+    private ServiceConnection serviceConnection = new ServiceConnection()
+    {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service)
+        {
+            locationService = new Messenger(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName className)
+        {
+            locationService = null;
+            
+        }
+        
+    };
     
     /** Called when the activity is first created. */
     @Override
@@ -78,6 +117,8 @@ public class LocationActivity extends MapActivity
         //Do the typical setup stuff
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location);
+        
+        bindService(new Intent(this, ZeframLocationRegistrationService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         
         //Store our location name field
         locationNameField = (EditText)findViewById(R.id.location_name_field);
@@ -208,7 +249,7 @@ public class LocationActivity extends MapActivity
                 //Toast.makeText(getApplicationContext(), "Single tap on map", Toast.LENGTH_LONG).show();
                 //Call the "Edit" activity explicitly
                 Intent i = new Intent(LocationActivity.this, ZeframActivity.class);
-                startActivityForResult(i, INTENT_RESULT_LOCATION); 
+                startActivityForResult(i, INTENT_RESULT_LOCATION);  
                 return true;
             }
             
@@ -216,6 +257,17 @@ public class LocationActivity extends MapActivity
         mapView.getOverlays().add(gestureOverlay);
 
     }//end onCreate
+    
+    /* (non-Javadoc)
+     * @see com.google.android.maps.MapActivity#onDestroy()
+     */
+    @Override
+    protected void onDestroy()
+    {
+        unbindService(serviceConnection);
+        super.onDestroy();
+        
+    }//end onDestroy
     
     protected Dialog onCreateDialog(int id)
     {
@@ -306,26 +358,66 @@ public class LocationActivity extends MapActivity
         }
         
     }//end onActivityResult
+    
+    private void removeProximityAlertForLocation(Location location)
+    {
+        Log.d(Z.TAG, "Unregistering location...");
+        
+        Message msg = Message.obtain(null, ZeframLocationRegistrationService.MSG_UNREGISTER_LOCATION, location.getId(), -1, null);
+         try {
+            locationService.send(msg);
+            
+        } catch ( RemoteException re ) {
+            Log.e(LocationListActivity.class.getName(), "Could not send message", re); 
+            throw new RuntimeException(re); 
+            
+        }
+        
+    }
+    
+    private void addProximityAlertForLocation(Location location)
+    {
+        Message msg = Message.obtain(null, ZeframLocationRegistrationService.MSG_REGISTER_LOCATION, location.getId(), -1, null);
+        
+        try {
+           locationService.send(msg);
+           
+       } catch ( RemoteException re ) {
+           Log.e(LocationListActivity.class.getName(), "Could not send message", re);
+           throw new RuntimeException(re); 
+           
+       }        
+        
+    }
 
     
     /**
-     * 
+     * Create or save the currently displayed location
      */
     private void saveLocation()
     {
         //Check that required fields are filled out
         String locationName = locationNameField.getText().toString();
         
+        //If something is wrong with the name, complain
         if ( locationName == null || "".equals(locationName.trim()) ) {
             showDialog(DIALOG_LOCATION_NAME_INVALID);
             return;
             
         }
         
+        //Otherwise store the name
         location.setName(locationName.trim());
         
         try {
+            //Update the location in the database
             locationDao.createOrUpdate(location);
+            
+            //Remove any existing proximity alert location...
+            removeProximityAlertForLocation(location);
+            
+            //Add back in the proximity alert location
+            addProximityAlertForLocation(location);
             
         } catch ( SQLException sqle ) {
             Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
@@ -333,12 +425,18 @@ public class LocationActivity extends MapActivity
             
         }
         
-        
     }//end saveLocation
     
+    /**
+     * Delete the current location
+     */
     private void deleteLocation()
     {
         try {
+            //Remove the proximity alert for this location
+            removeProximityAlertForLocation(location);
+            
+            //Actually remove the location from the database
             locationDao.delete(location);
             
         } catch ( SQLException sqle ) {
@@ -347,7 +445,7 @@ public class LocationActivity extends MapActivity
             
         }
         
-    }
+    }//end deleteLocation
     
     /**
      * Get the OrmLite database helper for this Android project

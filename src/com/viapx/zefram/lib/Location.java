@@ -2,6 +2,9 @@ package com.viapx.zefram.lib;
 
 import java.util.List;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
 
