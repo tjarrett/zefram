@@ -10,8 +10,12 @@ import com.j256.ormlite.dao.Dao;
 import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -32,7 +36,11 @@ public class ZeframLocationRegistrationService extends Service
     
     static public final int MSG_UNREGISTER_LOCATION = 1;
     
+    static private final String PROX_ALERT_INTENT = "com.viapx.zefram.PROXIMITY_ALERT";
+    
     private Timer timer = new Timer();
+    
+    private LocationManager locationManager;
     
     /**
      * The DatabaseHelper for access our SQLite database
@@ -134,6 +142,17 @@ public class ZeframLocationRegistrationService extends Service
     {
         Log.d(Z.TAG, "Adding proximity detection for location: " + location.getName());
         
+        //Build our intent
+        Intent intent = new Intent(PROX_ALERT_INTENT);
+        intent.putExtra("location", location.getId());
+        
+        //Prepare our pending intent
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), location.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        
+        //Register it all up
+        locationManager.addProximityAlert(location.getLatitudeDegrees(), location.getLongitudeDegrees(), 100f, 600000, pendingIntent);
+
+        
     }//end addProximityAlertForLocation
     
     /**
@@ -181,6 +200,9 @@ public class ZeframLocationRegistrationService extends Service
         
         instance = this;
         
+        //Get our location manager
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        
         //Go get the database helper
         databaseHelper = (DatabaseHelper)getDatabaseHelper();
         
@@ -194,14 +216,14 @@ public class ZeframLocationRegistrationService extends Service
             
         }
         
-        timer.scheduleAtFixedRate(new TimerTask() {
+        /*timer.scheduleAtFixedRate(new TimerTask() {
 
             @Override
             public void run()
             {
                 Log.d(Z.TAG, "Service still running...");
                 
-            }}, 0, 1500);
+            }}, 0, 1500);*/
         
         //Initialize proximity alerts
         initProximityAlerts();

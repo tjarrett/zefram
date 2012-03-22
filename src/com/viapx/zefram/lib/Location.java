@@ -95,11 +95,21 @@ public class Location
     }
 
     /**
+     * Returns the latitude in microdegrees (same as GeoPoint.getLatitudeE6())
      * @return the latitude
      */
     public int getLatitude()
     {
         return latitude;
+    }
+    
+    /**
+     * Returns the latitude in degrees
+     * @return the latitude as a double
+     */
+    public double getLatitudeDegrees()
+    {
+        return latitude / 1E6;
     }
 
     /**
@@ -109,13 +119,31 @@ public class Location
     {
         this.latitude = latitude;
     }
+    
+    /**
+     * @param latitude the latitude to set
+     */
+    public void setLatitude(double latitude)
+    {
+        this.latitude = (int)(latitude * 1E6);
+    }
 
     /**
+     * Returns the longitude in microdegrees (same as GeoPoint.getLongitudeE6())
      * @return the lonitude
      */
     public int getLongitude()
     {
         return longitude;
+    }
+    
+    /**
+     * Returns the longitude in degrees
+     * @return longitude as double
+     */
+    public double getLongitudeDegrees()
+    {
+        return longitude / 1E6;
     }
 
     /**
@@ -124,6 +152,14 @@ public class Location
     public void setLongitude(int longitude)
     {
         this.longitude = longitude;
+    }
+    
+    /**
+     * @param latitude the latitude to set
+     */
+    public void setLongitude(double longitude)
+    {
+        this.longitude = (int)(longitude * 1E6);
     }
 
     /**
