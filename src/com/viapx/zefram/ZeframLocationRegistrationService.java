@@ -43,6 +43,11 @@ public class ZeframLocationRegistrationService extends Service
     private LocationManager locationManager;
     
     /**
+     * 
+     */
+    private IntentFilter intentFilter;
+    
+    /**
      * The DatabaseHelper for access our SQLite database
      */
     private DatabaseHelper databaseHelper = null;
@@ -200,6 +205,10 @@ public class ZeframLocationRegistrationService extends Service
         
         instance = this;
         
+        //Register our receiver
+        intentFilter = new IntentFilter(PROX_ALERT_INTENT);
+        registerReceiver(new ProximityAlertReceiver(), intentFilter);
+        
         //Get our location manager
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         
@@ -295,5 +304,7 @@ public class ZeframLocationRegistrationService extends Service
         return OpenHelperManager.getHelper(this, DatabaseHelper.class);
         
     }//end getDatabaseHelper
+    
+    
 
 }//end ZeframProximityService
