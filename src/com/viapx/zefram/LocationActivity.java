@@ -359,11 +359,14 @@ public class LocationActivity extends MapActivity
         
     }//end onActivityResult
     
-    private void removeProximityAlertForLocation(Location location)
+    private void removeProximityAlertForLocation(Location location, boolean delete)
     {
         Log.d(Z.TAG, "Unregistering location...");
         
-        Message msg = Message.obtain(null, ZeframLocationRegistrationService.MSG_UNREGISTER_LOCATION, location.getId(), -1, null);
+        int shouldDelete = ( delete ) ? 1 : -1;
+        
+        Message msg = Message.obtain(null, ZeframLocationRegistrationService.MSG_UNREGISTER_LOCATION, location.getId(), shouldDelete, null);
+        
          try {
             locationService.send(msg);
             
@@ -414,7 +417,7 @@ public class LocationActivity extends MapActivity
             locationDao.createOrUpdate(location);
             
             //Remove any existing proximity alert location...
-            removeProximityAlertForLocation(location);
+            removeProximityAlertForLocation(location, false);
             
             //Add back in the proximity alert location
             addProximityAlertForLocation(location);
@@ -432,18 +435,8 @@ public class LocationActivity extends MapActivity
      */
     private void deleteLocation()
     {
-        try {
-            //Remove the proximity alert for this location
-            removeProximityAlertForLocation(location);
-            
-            //Actually remove the location from the database
-            locationDao.delete(location);
-            
-        } catch ( SQLException sqle ) {
-            Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
-            throw new RuntimeException(sqle); 
-            
-        }
+        //Remove the proximity alert for this location
+        removeProximityAlertForLocation(location, true);
         
     }//end deleteLocation
     

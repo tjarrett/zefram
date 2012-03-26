@@ -106,7 +106,9 @@ public class ZeframLocationRegistrationService extends Service
                         
                     }
                     
-                    removeProximityAlertForLocation(location);
+                    boolean shouldDelete = ( msg.arg2 == 1 );
+                    
+                    removeProximityAlertForLocation(location, shouldDelete);
                     break;
              
                 default:
@@ -164,9 +166,30 @@ public class ZeframLocationRegistrationService extends Service
      * Remove the proximity alert for the given location
      * @param location
      */
-    public void removeProximityAlertForLocation(Location location)
+    public void removeProximityAlertForLocation(Location location, boolean delete)
     {
         Log.d(Z.TAG, "Removing proximity detection for location: " + location.getName());
+        
+        //Build our intent
+        Intent intent = new Intent(PROX_ALERT_INTENT);
+        intent.putExtra("location", location.getId());
+        
+        //Prepare our pending intent
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), location.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        
+        locationManager.removeProximityAlert(pendingIntent);
+        
+        if ( delete ) {
+            try {
+                locationDao.delete(location);
+                
+            } catch ( SQLException sqle ) {
+                Log.e(LocationListActivity.class.getName(), "Could not delete location", sqle);
+                throw new RuntimeException(sqle);
+
+            }
+            
+        }
         
     }//end removeProximityAlertForLocation
     
