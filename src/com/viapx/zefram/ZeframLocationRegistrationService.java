@@ -157,7 +157,7 @@ public class ZeframLocationRegistrationService extends Service
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), location.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
         
         //Register it all up
-        locationManager.addProximityAlert(location.getLatitudeDegrees(), location.getLongitudeDegrees(), 100f, 600000, pendingIntent);
+        locationManager.addProximityAlert(location.getLatitudeDegrees(), location.getLongitudeDegrees(), location.getRadiusInMeters(), 600000, pendingIntent);
 
         
     }//end addProximityAlertForLocation

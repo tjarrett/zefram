@@ -6,8 +6,10 @@ import java.util.List;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
+import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.LocationOverlayItem;
 
 /**
@@ -28,12 +30,24 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
         populate();
     }
     
+    public void add(Location location)
+    {
+        GeoPoint geoPoint = location.getGeoPoint();
+        LocationOverlayItem loi = new LocationOverlayItem(geoPoint, location.getName(), "");
+        
+        add(loi);
+        
+    }
+    
     public void add(LocationOverlayItem location)
     {
         items.add(location);
         populate();
     }
 
+    /**
+     * Return the item at that particular index
+     */
     @Override
     protected LocationOverlayItem createItem(int i)
     {
@@ -41,6 +55,9 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
         
     }
 
+    /**
+     * The number of items that we have
+     */
     @Override
     public int size()
     {

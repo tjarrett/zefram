@@ -5,6 +5,7 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.maps.GeoPoint;
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
 
@@ -161,6 +162,33 @@ public class Location
     {
         this.longitude = (int)(longitude * 1E6);
     }
+    
+    /**
+     * Returns the radius in feet
+     * @return the radius in feet
+     */
+    public int getRadius()
+    {
+        return radius;
+    }
+    
+    /**
+     * Returns the radius in meters
+     * @return radius in meters
+     */
+    public float getRadiusInMeters()
+    {
+        return (float)radius * .3048f;
+    }
+    
+    /**
+     * @param radius radius the radius to set in feet
+     */
+    public void setRadius(int radius)
+    {
+        this.radius = radius;
+        
+    }
 
     /**
      * @return the active
@@ -177,5 +205,15 @@ public class Location
     {
         this.active = active;
     }
+    
+    /**
+     * Returns a GeoPoint representing this location
+     * @return
+     */
+    public GeoPoint getGeoPoint()
+    {
+        return new GeoPoint(getLatitude(), getLongitude());
+        
+    }//end getGeoPoint
 
 }//end Location

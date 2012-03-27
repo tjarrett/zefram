@@ -9,9 +9,11 @@
     <string name="menu_create_location">Add Location</string>
     <string name="location_name_field_hint">Location Name</string>
     <string name="location_label">Location</string>
-    <string name="radius_label">Radius</string>
+    <string name="radius_label">Radius (in feet)</string>
+    <string name="location_radius_field_prompt">Select radius in feet</string>
     <string name="events_label">Events</string>
     <string name="location_done_button_text">Done</string>
     <string name="location_cancel_button_text">Cancel</string>
     <string name="menu_delete_location">Delete</string>
+    
 </resources>

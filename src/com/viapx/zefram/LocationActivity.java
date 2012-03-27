@@ -14,6 +14,7 @@ import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.LocationUtils;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 import com.viapx.zefram.overlays.GestureDetectorOverlay;
+import com.viapx.zefram.overlays.LocationsOverlay;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -36,6 +38,7 @@ import android.view.MotionEvent;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -70,7 +73,7 @@ public class LocationActivity extends MapActivity
     /**
      * 
      */
-    private Spinner locationRadiusField;
+    private EditText locationRadiusField;
 
     /**
      * 
@@ -91,6 +94,11 @@ public class LocationActivity extends MapActivity
      * 
      */
     private Messenger locationService = null;
+    
+    /**
+     * The zefram locations overlay (for showing locations that the user has configured)
+     */
+    private LocationsOverlay locationsOverlay;
     
     private ServiceConnection serviceConnection = new ServiceConnection()
     {
@@ -123,8 +131,14 @@ public class LocationActivity extends MapActivity
         //Store our location name field
         locationNameField = (EditText)findViewById(R.id.location_name_field);
         
-        //Store our location radius field
-        locationRadiusField = (Spinner)findViewById(R.id.location_radius_field);
+        //Build our location radius field...
+        //Find it...
+        locationRadiusField = (EditText)findViewById(R.id.location_radius_field);
+        locationRadiusField.setText("30");
+        
+        //Build the adapter
+        ArrayAdapter<CharSequence> radiusAdapter = ArrayAdapter.createFromResource(this, R.array.radius_values, android.R.layout.simple_spinner_item);
+        radiusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         //Wire up the Done button
         Button doneButton = (Button)findViewById(R.id.location_done_button);
@@ -180,9 +194,15 @@ public class LocationActivity extends MapActivity
             
             //Load up location from the database
             try {
+                //Get the location
                 location = locationDao.queryForId(location_id);
+                
+                //Populate the name field
                 locationNameField.setText(location.getName());
                 
+                //Populate the radius field...
+                String radius = Integer.toString(location.getRadius());
+                locationRadiusField.setText(radius);
                 
             } catch ( SQLException sqle ) {
                 Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
@@ -255,6 +275,16 @@ public class LocationActivity extends MapActivity
             
         });
         mapView.getOverlays().add(gestureOverlay);
+        
+        //Get our drawable icon
+        Drawable marker = getResources().getDrawable(R.drawable.marker);
+        marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
+        
+        //Now add our locations overlay...
+        locationsOverlay = new LocationsOverlay(marker);
+        locationsOverlay.add(location);
+        
+        mapView.getOverlays().add(locationsOverlay);
 
     }//end onCreate
     
@@ -411,6 +441,22 @@ public class LocationActivity extends MapActivity
         
         //Otherwise store the name
         location.setName(locationName.trim());
+        
+        //Get the radius (in feet) as an int by trying to parse it as an int
+        int radius;
+        
+        try {
+            radius = Integer.parseInt(locationRadiusField.getText().toString());
+            
+        } catch ( NumberFormatException nfe ) {
+            Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
+            //todo: show dialog
+            return;
+            
+        }
+        
+        //If we made it this far, then it was some sort of int...
+        location.setRadius(radius);
         
         try {
             //Update the location in the database
