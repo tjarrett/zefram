@@ -277,7 +277,7 @@ public class LocationActivity extends MapActivity
         mapView.getOverlays().add(gestureOverlay);
         
         //Get our drawable icon
-        Drawable marker = getResources().getDrawable(R.drawable.better_marker);
+        Drawable marker = getResources().getDrawable(R.drawable.better_marker_2);
         marker.setBounds(0, 0, marker.getIntrinsicWidth()/4, marker.getIntrinsicHeight()/4);
         
         //Now add our locations overlay...

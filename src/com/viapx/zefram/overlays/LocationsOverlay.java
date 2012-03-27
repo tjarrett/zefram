@@ -100,13 +100,13 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
         int radius = metersToRadius(location.getRadiusInMeters(), mapView, location.getLatitudeDegrees());
         
         Paint paint = new Paint();
-        paint.setARGB(175, 83, 127, 198);
+        paint.setARGB(45, 83, 127, 198);
         paint.setAntiAlias(true);
        
         canvas.drawCircle(p.x, p.y, radius, paint);
         
         paint = new Paint();
-        paint.setARGB(255, 62, 83, 117);
+        paint.setARGB(255, 1, 103, 245);
         paint.setAntiAlias(true);
         paint.setStyle(Style.STROKE);
         paint.setStrokeWidth((int)(radius*.05));
