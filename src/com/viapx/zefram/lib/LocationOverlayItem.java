@@ -11,7 +11,9 @@ public class LocationOverlayItem extends OverlayItem
     
     private String snippet;
     
-    public LocationOverlayItem(GeoPoint point, String title, String snippet)
+    private Location location;
+    
+    public LocationOverlayItem(GeoPoint point, String title, String snippet, Location location)
     {
         super(point, title, snippet);
         
@@ -20,6 +22,20 @@ public class LocationOverlayItem extends OverlayItem
         this.title = title;
         
         this.snippet = snippet;
+        
+        this.location = location;
+        
+    }
+    
+    public LocationOverlayItem(Location location)
+    {
+        this(location.getGeoPoint(), location.getName(), "", location);
+        
+    }
+    
+    public Location getLocation()
+    {
+        return location;
         
     }
 

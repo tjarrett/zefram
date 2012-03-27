@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 
 import com.google.android.maps.GeoPoint;
@@ -23,7 +26,8 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
     
     public LocationsOverlay(Drawable defaultMarker)
     {
-        super(defaultMarker);
+        super(boundCenter(defaultMarker));
+        
         
         //Gotta call populate() before anything else can happen... since it's protected... easy to just call it here...
         //http://code.google.com/p/android/issues/detail?id=2035
@@ -33,7 +37,7 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
     public void add(Location location)
     {
         GeoPoint geoPoint = location.getGeoPoint();
-        LocationOverlayItem loi = new LocationOverlayItem(geoPoint, location.getName(), "");
+        LocationOverlayItem loi = new LocationOverlayItem(location);
         
         add(loi);
         
@@ -63,7 +67,54 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
     {
         return items.size();
     }
+
+    /* (non-Javadoc)
+     * @see com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)
+     * @see http://stackoverflow.com/questions/6029529/draw-circle-of-certain-radius-on-map-view-in-android
+     * @see http://stackoverflow.com/questions/2077054/how-to-compute-a-radius-around-a-point-in-an-android-mapview
+     */
+    @Override
+    public void draw(Canvas canvas, MapView mapView, boolean shadow)
+    {
+        if ( shadow ) {
+            
+        } else {
+            for ( LocationOverlayItem locationItem : items ) {
+                drawCircle(canvas, mapView, locationItem.getLocation());
+                
+            }//end for
+            
+        }
+        
+        // TODO Auto-generated method stub
+        super.draw(canvas, mapView, shadow);
+    }
     
+    public static int metersToRadius(float meters, MapView map, double latitude) {
+        return (int) (map.getProjection().metersToEquatorPixels(meters) * (1 / android.util.FloatMath.cos((float)Math.toRadians(latitude))));         
+    }    
+    
+    public void drawCircle(Canvas canvas, MapView mapView, Location location)
+    {
+        Point p = mapView.getProjection().toPixels(location.getGeoPoint(), null);
+        int radius = metersToRadius(location.getRadiusInMeters(), mapView, location.getLatitudeDegrees());
+        
+        Paint paint = new Paint();
+        paint.setARGB(175, 83, 127, 198);
+        paint.setAntiAlias(true);
+       
+        canvas.drawCircle(p.x, p.y, radius, paint);
+        
+        paint = new Paint();
+        paint.setARGB(255, 62, 83, 117);
+        paint.setAntiAlias(true);
+        paint.setStyle(Style.STROKE);
+        paint.setStrokeWidth((int)(radius*.05));
+        
+        canvas.drawCircle(p.x, p.y, radius, paint);
+        
+    }
+
     
 
 }
