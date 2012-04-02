@@ -12,7 +12,7 @@ import com.viapx.zefram.lib.*;
  */
 public class DatabaseConfigUtil extends OrmLiteConfigUtil
 {
-    private static final Class<?>[] classes = new Class[] { Location.class, };
+    public static final Class<?>[] classes = new Class[] { Location.class, LocationEvent.class };
 
     public static void main(String[] args) throws Exception
     {

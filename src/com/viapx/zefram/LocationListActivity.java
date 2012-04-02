@@ -3,6 +3,7 @@
 package com.viapx.zefram;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.j256.ormlite.android.AndroidCompiledStatement;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -11,6 +12,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.viapx.zefram.lib.Location;
+import com.viapx.zefram.lib.LocationEvent;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.Activity;
@@ -63,74 +65,6 @@ public class LocationListActivity extends Activity
             
         }
         
-        //Try to find our current location
-        final LocationManager locationManager = (LocationManager)getSystemService(this.getApplicationContext().LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
-
-            @Override
-            public void onLocationChanged(android.location.Location arg0)
-            {
-                locationManager.removeUpdates(this);
-                
-            }
-
-            @Override
-            public void onProviderDisabled(String arg0)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void onProviderEnabled(String arg0)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void onStatusChanged(String arg0, int arg1, Bundle arg2)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-        };
-            
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        
-        
-        locationListener = new LocationListener() {
-
-            @Override
-            public void onLocationChanged(android.location.Location arg0)
-            {
-                locationManager.removeUpdates(this);
-                
-            }
-
-            @Override
-            public void onProviderDisabled(String arg0)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void onProviderEnabled(String arg0)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void onStatusChanged(String arg0, int arg1, Bundle arg2)
-            {
-                // TODO Auto-generated method stub
-                
-            }
-        };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        
     }//end onCreate
     
     /* (non-Javadoc)
@@ -167,6 +101,39 @@ public class LocationListActivity extends Activity
             Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
             throw new RuntimeException(sqle); 
 
+        }
+        
+        try {
+            Dao<LocationEvent, Integer> locationEventDao;
+            Cursor locationEventCursor;
+            List<Location> locations = locationDao.queryForEq("name", "Home");
+            
+            if ( locations.size() > 0 ) {
+                Location l = locations.get(0);
+                
+                locationEventDao = databaseHelper.getDao(LocationEvent.class);
+                
+                List<LocationEvent> lle = locationEventDao.queryForAll();
+                Log.d(Z.TAG, "Found " + lle.size() + " location events");
+                
+                if ( lle.size() == 0 ) {
+                    LocationEvent le = new LocationEvent();
+                    le.setType(LocationEvent.Type.Wifi);
+                    le.setLocation(l);
+                    le.setServicePackageName("com.viapx.zefram");
+                    le.setServiceClassName("com.viapx.zefram.LocationEventWifiService");
+                    le.setExtra("Off");
+                    
+                    int test = locationEventDao.create(le);
+                    Log.d(Z.TAG, "Created " + test + " location events");
+
+                }      
+            }
+            
+        } catch ( SQLException sqle ) {
+            Log.e(LocationListActivity.class.getName(), "Could not get create test location events", sqle);
+            throw new RuntimeException(sqle); 
+            
         }
         
         //Still here? Then we got the cursor that we need...

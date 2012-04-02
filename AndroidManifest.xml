@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.viapx.zefram"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0"
+    android:debuggable="true" >
 
     <uses-sdk android:minSdkVersion="8" />
     
@@ -10,6 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.GET_TASKS"/> 
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -54,6 +57,7 @@
             See http://www.vogella.de/articles/AndroidServices/article.html
          -->
         <service android:name=".ZeframLocationRegistrationService" android:process=":my_process"></service>
+        <service android:name=".LocationEventWifiService" android:process=":my_process" android:enabled="true"></service>
         
         <uses-library android:name="com.google.android.maps" />
         

@@ -12,6 +12,7 @@ import com.j256.ormlite.table.TableUtils;
 
 import com.viapx.zefram.*;
 import com.viapx.zefram.lib.Location;
+import com.viapx.zefram.lib.LocationEvent;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
@@ -28,8 +29,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper
     /**
      * The list of classes supported by this helper...
      */
-    private static final Class<?>[] classes = new Class[] {
-        Location.class
+    public static final Class<?>[] classes = new Class[] {
+        Location.class,
+        LocationEvent.class
     };
 
     /**

@@ -6,18 +6,16 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
-import com.viapx.zefram.services.*;
-
 /**
- * The service that handles turning off and on Wifi
- * @author tjarrett
- * @see http://developer.android.com/guide/topics/fundamentals/services.html
- */
+* The service that handles turning off and on Wifi
+* @author tjarrett
+* @see http://developer.android.com/guide/topics/fundamentals/services.html
+*/
 public class LocationEventWifiService extends IntentService
-{    
+{
     /**
-     * The constructor
-     */
+* The constructor
+*/
     public LocationEventWifiService()
     {
         super(LocationEventWifiService.class.getName());
@@ -26,15 +24,15 @@ public class LocationEventWifiService extends IntentService
     }//end LocationEventWifiService constructor
 
     /**
-     * Handle the intents as they roll on in
-     */
+* Handle the intents as they roll on in
+*/
     @Override
     protected void onHandleIntent(Intent intent)
     {
         //Announce that we are in
         Log.d(Z.TAG, LocationEventWifiService.class.getName() + " received an intent!");
         
-        //Look to make sure we have an "extra" 
+        //Look to make sure we have an "extra"
         String extra = intent.getExtras().getString("extra");
         if ( extra == null ) {
             Log.d(Z.TAG, "No `extra` in extras()... don't know whether to turn wifi off or on");
@@ -56,10 +54,10 @@ public class LocationEventWifiService extends IntentService
     }//end onHandleIntent
     
     /**
-     * When I didn't have this... the damn thing didn't work...
-     */
+* When I didn't have this... the damn thing didn't work...
+*/
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) 
+    public int onStartCommand(Intent intent, int flags, int startId)
     {
         return super.onStartCommand(intent,flags,startId);
         
