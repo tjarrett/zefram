@@ -1,5 +1,5 @@
 #
-# generated on 2012/03/26 09:55:11
+# generated on 2012/03/31 12:45:58
 #
 # --table-start--
 dataClass=com.viapx.zefram.lib.Location
@@ -24,6 +24,40 @@ fieldName=radius
 # --field-end--
 # --field-start--
 fieldName=active
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.viapx.zefram.lib.LocationEvent
+tableName=location_events
+# --table-fields-start--
+# --field-start--
+fieldName=_id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=location
+canBeNull=false
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
+fieldName=onEnter
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=servicePackageName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=serviceClassName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=extra
 # --field-end--
 # --table-fields-end--
 # --table-end--
