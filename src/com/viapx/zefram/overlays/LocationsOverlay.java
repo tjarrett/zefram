@@ -67,6 +67,11 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
     {
         return items.size();
     }
+    
+    public void invalidate()
+    {
+        populate();
+    }
 
     /* (non-Javadoc)
      * @see com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)

@@ -38,7 +38,7 @@ public class ProximityAlertReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        Log.d(Z.TAG, "Received a proximity alert notice...");
+        Log.d(Z.TAG, "Received a proximity alert notice... with id " + intent.getExtras().getInt("location"));
         initDatabase(context);
         
         //Still here? Then we have our locationDao -- get our location
@@ -50,6 +50,19 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         } catch ( SQLException sqle ) {
             Log.e(Z.TAG, "Could not get location dao", sqle);
             throw new RuntimeException(sqle);
+            
+        }
+        
+        //Make sure we actually got a location...
+        if ( location == null ) {
+            Log.d(Z.TAG, "Yikes! We got a proximity alert for a location that does not seem to be in the database!! Clean it up...");
+            
+            location = new Location();
+            location.setName("missing location");
+            location.setId(intent.getExtras().getInt("location"));
+            
+            ZeframLocationRegistrationService.getInstance().removeProximityAlertForLocation(location, false);
+            return;
             
         }
         
@@ -88,19 +101,6 @@ public class ProximityAlertReceiver extends BroadcastReceiver
             
         }//end for LocationEvent
         
-        /*
-        
-        if ( intent.getExtras().getBoolean(LocationManager.KEY_PROXIMITY_ENTERING) ) {
-            Log.d(Z.TAG, "Entering location " + location.getName());
-            
-            // http://stackoverflow.com/questions/2728465/how-to-call-one-android-application-from-another-android-application
-            // http://mobileorchard.com/android-app-development-implementing-remote-android-services-with-aidl/
-            
-        } else {
-            Log.d(Z.TAG, "Leaving location " + location.getName());
-                
-        }*/
-        
     }//end onReceive
     
     /**
@@ -111,7 +111,7 @@ public class ProximityAlertReceiver extends BroadcastReceiver
     {
         if ( databaseHelper == null ) {
             //Get our dataabase
-            databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+            databaseHelper = (DatabaseHelper)ZeframLocationRegistrationService.getDatabaseHelper(context.getApplicationContext());
             
         }
         
@@ -119,7 +119,7 @@ public class ProximityAlertReceiver extends BroadcastReceiver
             //Build our database object
             try {
                 locationDao = databaseHelper.getDao(Location.class);
-                locationEventDao = databaseHelper.getDao(LocationEvent.class);
+                locationEventDao = databaseHelper.getDao(LocationEvent.class); 
                 
             } catch ( SQLException sqle ) {
                 Log.e(Z.TAG, "Could not get location dao", sqle);

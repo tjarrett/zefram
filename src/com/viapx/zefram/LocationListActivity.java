@@ -3,7 +3,6 @@
 package com.viapx.zefram;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import com.j256.ormlite.android.AndroidCompiledStatement;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -12,14 +11,11 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.viapx.zefram.lib.Location;
-import com.viapx.zefram.lib.LocationEvent;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -94,46 +90,13 @@ public class LocationListActivity extends Activity
                  getBaseContext(), 
                  R.layout.location_list_item, 
                  locationCursor, 
-                 new String[]{"name"},
-                 new int[]{R.id.location_name});
+                 new String[]{"name", "radius"},
+                 new int[]{R.id.location_name, R.id.radius});
             
         } catch ( SQLException sqle ) {
             Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
             throw new RuntimeException(sqle); 
 
-        }
-        
-        try {
-            Dao<LocationEvent, Integer> locationEventDao;
-            Cursor locationEventCursor;
-            List<Location> locations = locationDao.queryForEq("name", "Home");
-            
-            if ( locations.size() > 0 ) {
-                Location l = locations.get(0);
-                
-                locationEventDao = databaseHelper.getDao(LocationEvent.class);
-                
-                List<LocationEvent> lle = locationEventDao.queryForAll();
-                Log.d(Z.TAG, "Found " + lle.size() + " location events");
-                
-                if ( lle.size() == 0 ) {
-                    LocationEvent le = new LocationEvent();
-                    le.setType(LocationEvent.Type.Wifi);
-                    le.setLocation(l);
-                    le.setServicePackageName("com.viapx.zefram");
-                    le.setServiceClassName("com.viapx.zefram.services.LocationEventWifiService");
-                    le.setExtra("Off");
-                    
-                    int test = locationEventDao.create(le);
-                    Log.d(Z.TAG, "Created " + test + " location events");
-
-                }      
-            }
-            
-        } catch ( SQLException sqle ) {
-            Log.e(LocationListActivity.class.getName(), "Could not get create test location events", sqle);
-            throw new RuntimeException(sqle); 
-            
         }
         
         //Still here? Then we got the cursor that we need...

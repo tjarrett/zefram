@@ -236,7 +236,7 @@ public class ZeframLocationRegistrationService extends Service
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         
         //Go get the database helper
-        databaseHelper = (DatabaseHelper)getDatabaseHelper();
+        databaseHelper = (DatabaseHelper)getDatabaseHelper(getApplicationContext());
         
         //Now get the data access object
         try {
@@ -322,9 +322,9 @@ public class ZeframLocationRegistrationService extends Service
      * Get the OrmLite database helper for this Android project
      * @return
      */
-    private OrmLiteSqliteOpenHelper getDatabaseHelper()
+    static public OrmLiteSqliteOpenHelper getDatabaseHelper(Context context)
     {
-        return OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        return OpenHelperManager.getHelper(context.getApplicationContext(), DatabaseHelper.class);
         
     }//end getDatabaseHelper
     

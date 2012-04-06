@@ -56,8 +56,8 @@
             Register our service
             See http://www.vogella.de/articles/AndroidServices/article.html
          -->
-        <service android:name=".ZeframLocationRegistrationService" android:process=":my_process"></service>
-        <service android:name="com.viapx.zefram.services.LocationEventWifiService" android:process=":my_process" android:enabled="true">
+        <service android:name=".ZeframLocationRegistrationService"></service>
+        <service android:name="com.viapx.zefram.services.LocationEventWifiService" android:enabled="true">
             <intent-filter>
                 <action android:name="com.viapx.services.LOCATION_EVENT_WIFI"/>
             </intent-filter>

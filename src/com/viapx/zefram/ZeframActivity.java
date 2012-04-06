@@ -16,6 +16,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.viapx.zefram.lib.*;
@@ -64,6 +67,11 @@ public class ZeframActivity extends MapActivity
      * The DatabaseHelper for access our SQLite database
      */
     private DatabaseHelper databaseHelper = null;
+    
+    /**
+     * Whether or not we are showing the satellite view
+     */
+    private boolean satelliteView = false;
 
     /** Called when the activity is first created. */
     @Override
@@ -74,6 +82,7 @@ public class ZeframActivity extends MapActivity
 
         // Get our map view
         mapView = (MapView)findViewById(R.id.mapview);
+        mapView.setSatellite(satelliteView);
         
         //Show the built in zoom controls
         mapView.setBuiltInZoomControls(true);
@@ -181,7 +190,18 @@ public class ZeframActivity extends MapActivity
         locationsOverlay = new LocationsOverlay(marker);
         mapView.getOverlays().add(locationsOverlay);
         
-        //mapView.getOverlays().add(new GeoFenceOverlay(marker)); 
+        //Hook up our satellite button
+        Button satelliteToggle = (Button)this.findViewById(R.id.map_satellite_button);
+        satelliteToggle.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v)
+            {
+                satelliteView = !satelliteView;
+                mapView.setSatellite(satelliteView);
+                
+            }
+        });
 
     }// end onCreate
 

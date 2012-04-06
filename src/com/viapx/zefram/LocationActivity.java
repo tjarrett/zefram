@@ -30,7 +30,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,6 +43,8 @@ import android.view.MotionEvent;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -135,6 +142,31 @@ public class LocationActivity extends MapActivity
         //Find it...
         locationRadiusField = (EditText)findViewById(R.id.location_radius_field);
         locationRadiusField.setText("30");
+        locationRadiusField.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus)
+            {
+              //Get the radius (in feet) as an int by trying to parse it as an int
+                int radius;
+                
+                try {
+                    radius = Integer.parseInt(locationRadiusField.getText().toString());
+                    
+                } catch ( NumberFormatException nfe ) {
+                    Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
+                    //todo: show dialog
+                    return;
+                    
+                }
+                
+                location.setRadius(radius);
+                
+                mapView.invalidate();    
+                
+            }
+            
+        });
         
         //Build the adapter
         ArrayAdapter<CharSequence> radiusAdapter = ArrayAdapter.createFromResource(this, R.array.radius_values, android.R.layout.simple_spinner_item);
@@ -378,9 +410,13 @@ public class LocationActivity extends MapActivity
                 location.setLatitude(latitude);
                 location.setLongitude(longitude);
                 
+                mapView.invalidate();
+                
                 //Move the map
-                GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+                GeoPoint geoPoint = location.getGeoPoint();
                 mapController.animateTo(geoPoint);
+                
+                Log.d(Z.TAG, "I just invalidated the MapView... ");
                 
                 
             }
@@ -492,7 +528,7 @@ public class LocationActivity extends MapActivity
      */
     private OrmLiteSqliteOpenHelper getDatabaseHelper()
     {
-        return OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        return ZeframLocationRegistrationService.getDatabaseHelper(getApplicationContext()); 
         
     }//end getDatabaseHelper
 
