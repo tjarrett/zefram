@@ -121,7 +121,7 @@ public class LocationListActivity extends Activity
                     le.setType(LocationEvent.Type.Wifi);
                     le.setLocation(l);
                     le.setServicePackageName("com.viapx.zefram");
-                    le.setServiceClassName("com.viapx.zefram.LocationEventWifiService");
+                    le.setServiceClassName("com.viapx.zefram.services.LocationEventWifiService");
                     le.setExtra("Off");
                     
                     int test = locationEventDao.create(le);
