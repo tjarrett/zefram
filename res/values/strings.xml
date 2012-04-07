@@ -14,7 +14,12 @@
     <string name="events_label">Events</string>
     <string name="location_done_button_text">Done</string>
     <string name="location_cancel_button_text">Cancel</string>
-    <string name="menu_delete_location">Delete</string>
+    <string name="menu_delete_location">Delete Location</string>
+    <string name="menu_add_location_event">Add Event</string>
     <string name="map_toggle_satellite">Toggle Satellite</string>
+    <string name="location_event_when_occur_label">When should this event occur?</string>
+    <string name="location_event_arriving_radio_label">Arriving</string>
+    <string name="location_event_leaving_radio_label">Leaving</string>
+    <string name="location_event_action_label">What should this event do?</string>
     
 </resources>

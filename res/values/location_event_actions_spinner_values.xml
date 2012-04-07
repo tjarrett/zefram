@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="actions">
+        <item>Turn wifi on</item>
+        <item>Turn wifi off</item>
+        <item>Set ringer to vibrate</item>
+        <item>Set ringer to full volume</item>
+    </string-array>    
+</resources>

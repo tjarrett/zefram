@@ -12,6 +12,7 @@ import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -119,6 +120,8 @@ public class ZeframLocationRegistrationService extends Service
         }//end handleMessage
         
     });
+
+    private BroadcastReceiver proximityAlertReceiver;
     
     /**
      * Returns an instance of this service if it is running, false otherwise
@@ -228,9 +231,9 @@ public class ZeframLocationRegistrationService extends Service
         
         instance = this;
         
-        //Register our receiver
+        proximityAlertReceiver = new ProximityAlertReceiver();
         intentFilter = new IntentFilter(PROX_ALERT_INTENT);
-        registerReceiver(new ProximityAlertReceiver(), intentFilter);
+        registerReceiver(proximityAlertReceiver, intentFilter);
         
         //Get our location manager
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -295,6 +298,11 @@ public class ZeframLocationRegistrationService extends Service
             
         }
         
+        //Clear our receiver
+        unregisterReceiver(proximityAlertReceiver);
+        proximityAlertReceiver = null;
+        
+        //Let papa do his work
         super.onDestroy();
         
     }//end onDestroy

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activities>
+    <activity
+        custom="false"
+        package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventWifiService" 
+        extra="On"
+        >Turn WIFI On</activity>
+        
+    <activity
+        custom="false"
+        package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventWifiService" 
+        extra="Off"
+        >Turn WIFI Off</activity>
+        
+    <activity
+        custom="true"
+        package="" 
+        class="" 
+        extra=""
+        >Call Custom Service</activity>
+</activities>

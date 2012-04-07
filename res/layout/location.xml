@@ -75,6 +75,15 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
         
         <LinearLayout 
+            android:id="@+id/event_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            
+        </LinearLayout>
+        
+        <LinearLayout 
             android:id="@+id/footer" 
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" 

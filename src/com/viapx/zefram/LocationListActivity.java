@@ -51,16 +51,6 @@ public class LocationListActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_list);
         
-        //Start-up our service if it's not already running...
-        if ( !ZeframLocationRegistrationService.isRunning() ) {
-            startService(new Intent(this, ZeframLocationRegistrationService.class));
-            Log.d(Z.TAG, "Started the ZeframLocationRegistrationService");
-            
-        } else {
-            Log.d(Z.TAG, "ZeframLocationRegistrationService already running...");
-            
-        }
-        
     }//end onCreate
     
     /* (non-Javadoc)
@@ -143,13 +133,11 @@ public class LocationListActivity extends Activity
     }//end onPause
 
     /* (non-Javadoc)
-     * @see com.google.android.maps.MapActivity#onDestroy()
+     * @see com.google.android.maps.MapActivity#onStop()
      */
     @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        
+    protected void onStop()
+    {        
         //Clean up our database
         if ( databaseHelper != null ) {
             OpenHelperManager.releaseHelper();
@@ -157,7 +145,9 @@ public class LocationListActivity extends Activity
             
         }
         
-    }//end onDestroy
+        super.onStop();
+        
+    }//end onStop 
     
     /* (non-Javadoc)
      * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)

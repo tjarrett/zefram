@@ -1,6 +1,7 @@
 package com.viapx.zefram;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -11,6 +12,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.viapx.zefram.lib.Location;
+import com.viapx.zefram.lib.LocationEvent;
 import com.viapx.zefram.lib.LocationUtils;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 import com.viapx.zefram.overlays.GestureDetectorOverlay;
@@ -48,6 +50,7 @@ import android.view.View.OnKeyListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -56,6 +59,8 @@ public class LocationActivity extends MapActivity
     static final int DIALOG_LOCATION_NAME_INVALID = 0;
     
     static final int INTENT_RESULT_LOCATION = 0;
+    
+    static final int INTENT_RESULT_EVENT = 1;
     
     /**
      * 
@@ -71,6 +76,11 @@ public class LocationActivity extends MapActivity
      * 
      */
     private Dao<Location, Integer> locationDao;
+    
+    /**
+     * 
+     */
+    private Dao<LocationEvent, Integer> locationEventDao;
     
     /**
      * 
@@ -124,6 +134,10 @@ public class LocationActivity extends MapActivity
         }
         
     };
+
+    private LinearLayout eventList;
+
+    private List<LocationEvent> locationEvents;
     
     /** Called when the activity is first created. */
     @Override
@@ -133,6 +147,7 @@ public class LocationActivity extends MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location);
         
+        //Wire up to our service
         bindService(new Intent(this, ZeframLocationRegistrationService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         
         //Store our location name field
@@ -168,10 +183,6 @@ public class LocationActivity extends MapActivity
             
         });
         
-        //Build the adapter
-        ArrayAdapter<CharSequence> radiusAdapter = ArrayAdapter.createFromResource(this, R.array.radius_values, android.R.layout.simple_spinner_item);
-        radiusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        
         //Wire up the Done button
         Button doneButton = (Button)findViewById(R.id.location_done_button);
         doneButton.setOnClickListener(new OnClickListener() {
@@ -198,20 +209,20 @@ public class LocationActivity extends MapActivity
             }
             
         });
-        
-        mapView = (MapView)findViewById(R.id.mapview);
-        
-        mapController = mapView.getController();
-        
-        // Set a reasonable zoom level
-        mapController.setZoom(19);
-        mapView.setClickable(true);
-        mapView.setEnabled(true);
-        
+
+    }//end onCreate
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
         //Set up the database connection
         databaseHelper = (DatabaseHelper)getDatabaseHelper();
         try {
             locationDao = databaseHelper.getDao(Location.class);
+            locationEventDao = databaseHelper.getDao(LocationEvent.class);
             
         } catch ( SQLException sqle ) {
             Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
@@ -253,6 +264,30 @@ public class LocationActivity extends MapActivity
             }
             
         }
+        
+        // TODO Auto-generated method stub
+        super.onStart();
+    }
+    
+    /* (non-Javadoc)
+     * @see com.google.android.maps.MapActivity#onResume()
+     */
+    @Override
+    protected void onResume()
+    {
+        // TODO Auto-generated method stub
+        super.onResume();
+        
+        //Set up our MapView
+        mapView = (MapView)findViewById(R.id.mapview);
+        
+        mapController = mapView.getController();
+        
+        // Set a reasonable zoom level
+        mapController.setZoom(19);
+        mapView.setClickable(true);
+        mapView.setEnabled(true);
+        
 
         //Use the gesture overlay to listen for a click on the map
         Overlay gestureOverlay = new GestureDetectorOverlay(new OnGestureListener(){
@@ -317,19 +352,60 @@ public class LocationActivity extends MapActivity
         locationsOverlay.add(location);
         
         mapView.getOverlays().add(locationsOverlay);
-
-    }//end onCreate
+        
+        mapView.setSatellite(false);
+        
+        //Show the events associated with this location
+        eventList = (LinearLayout)findViewById(R.id.event_list);
+        try {
+            locationEvents = locationEventDao.queryForEq("location_id", location.getId());
+            Log.d(Z.TAG, "I found " + locationEvents.size() + " events");
+            
+        } catch ( SQLException sqle ) {
+            Log.e(LocationListActivity.class.getName(), "Unable to query for location events", sqle);
+            throw new RuntimeException(sqle); 
+            
+        }
+        
+        
+        
+    }
     
     /* (non-Javadoc)
-     * @see com.google.android.maps.MapActivity#onDestroy()
+     * @see com.google.android.maps.MapActivity#onPause()
+     */
+    @Override
+    protected void onPause()
+    {
+        // TODO Auto-generated method stub
+        super.onPause();
+        
+        mapView = null;
+        locationsOverlay = null;
+        eventList = null;
+        locationEvents = null;
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see com.google.android.maps.MapActivity#onStop()
      */
     @Override
     protected void onDestroy()
     {
+        //Release the service
         unbindService(serviceConnection);
-        super.onDestroy();
         
-    }//end onDestroy
+        //Release the database
+        if ( databaseHelper != null ) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+            
+        }
+        
+        super.onStop();
+        
+    }//end onStop
     
     protected Dialog onCreateDialog(int id)
     {
@@ -386,12 +462,16 @@ public class LocationActivity extends MapActivity
                 finish();
                 break;
                 
+            case R.id.menu_add_location_event:
+                showLocationEventActivity();
+                break;
+                
         }//end switch
         
         return super.onMenuItemSelected(featureId, item);
         
     }//end onMenuItemSelected 
-    
+
     /**
      * 
      * @param requestCode
@@ -410,13 +490,10 @@ public class LocationActivity extends MapActivity
                 location.setLatitude(latitude);
                 location.setLongitude(longitude);
                 
-                mapView.invalidate();
-                
                 //Move the map
-                GeoPoint geoPoint = location.getGeoPoint();
-                mapController.animateTo(geoPoint);
+                GeoPoint geoPoint = location.getGeoPoint();               
                 
-                Log.d(Z.TAG, "I just invalidated the MapView... ");
+            } else if ( requestCode == INTENT_RESULT_EVENT ) {
                 
                 
             }
@@ -538,5 +615,29 @@ public class LocationActivity extends MapActivity
         return false;
         
     }//end isRouteDisplayed
-
+    
+    private void showLocationEventActivity()
+    {
+        showLocationEventActivity(null);
+        
+    }
+    
+    private void showLocationEventActivity(Integer id)
+    {
+        //Figure out if we are adding or not
+        boolean adding = ( id == null );
+        String action = ( adding ) ? "add" : "edit";
+        
+        Intent i = new Intent(this, LocationEventActivity.class);
+        i.putExtra("action", action);
+        
+        if ( !adding ) {
+            i.putExtra("event_id", id);
+            
+        }
+        
+        startActivity(i);
+        
+    }
+    
 }//end LocationActivity

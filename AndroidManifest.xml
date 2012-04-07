@@ -42,6 +42,14 @@
             </intent-filter>
         </activity>
         
+        <activity
+            android:name=".LocationEventActivity" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+                <!--  <category android:name="android.intent.category.LAUNCHER" /> -->
+            </intent-filter>
+        </activity>
+        
         <!-- 
             Register the receiver that starts our service
             See http://www.vogella.de/articles/AndroidServices/article.html
