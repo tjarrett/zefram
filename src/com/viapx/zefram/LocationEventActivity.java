@@ -45,6 +45,8 @@ public class LocationEventActivity extends Activity
     
     private Location location;
     
+    private LocationEvent event;
+    
     /**
      * The DatabaseHelper for access our SQLite database
      */
@@ -68,10 +70,7 @@ public class LocationEventActivity extends Activity
     {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.location_event);
-        
-        //Figure out if we are adding or editing
-        activityAction = getIntent().getExtras().getString("action");        
+        setContentView(R.layout.location_event);  
         
         //Go get our actions from the xml file
         try {
@@ -132,9 +131,38 @@ public class LocationEventActivity extends Activity
             throw new RuntimeException(sqle); 
             
         }
+
+        //Figure out if we are adding or editing
+        activityAction = getIntent().getExtras().getString("action");      
         
-        int location_id = (int)getIntent().getExtras().getInt("location_id");
+        //If editing, load up the event
+        if ( "edit".equals(activityAction) ) {
+            eventId = getIntent().getExtras().getInt("event_id");
+            try {
+                //Get the event from the database
+                event = locationEventDao.queryForId(eventId);
+                
+                //Figure out which radio button to check -- and then check it
+                int radioButtonId = ( event.getOnEnter() ) ? R.id.location_event_arriving_radio_button : R.id.location_event_leaving_radio_button;
+                RadioButton rb = (RadioButton)findViewById(radioButtonId);
+                rb.setChecked(true);
+               
+                //Now take care of the spinner -- figure out which index to select and select it
+                int index = spinnerActions.indexOf(event.getDisplayName());
+                this.actionSpinner.setSelection(index);
+                
+            } catch ( SQLException sqle ) {
+                Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+                throw new RuntimeException(sqle); 
+                
+            }
+            
+            
+        }
+
+        
         //Load up location from the database
+        int location_id = (int)getIntent().getExtras().getInt("location_id");
         try {
             //Get the location
             location = locationDao.queryForId(location_id);
@@ -284,23 +312,24 @@ public class LocationEventActivity extends Activity
         
         
         if ( "add".equals(activityAction) ) {
-            LocationEvent event = new LocationEvent();
-            event.setLocation(location); 
-            event.setOnEnter(onEnter);
-            event.setServicePackageName(lea.getActionPackage());
-            event.setServiceClassName(lea.getActionClass());
-            event.setExtra(lea.getExtra());
-            event.setDisplayName(lea.getText()); 
+            event = new LocationEvent();
             
-            try {
-                locationEventDao.createOrUpdate(event);
-                Log.d(Z.TAG, "Event saved!");
-                
-            } catch ( SQLException sqle ) {
-                Log.e(LocationListActivity.class.getName(), "Could not save locatione event", sqle);
-                throw new RuntimeException(sqle); 
-                
-            }
+        }
+        
+        event.setLocation(location);  
+        event.setOnEnter(onEnter);
+        event.setServicePackageName(lea.getActionPackage());
+        event.setServiceClassName(lea.getActionClass());
+        event.setExtra(lea.getExtra());
+        event.setDisplayName(lea.getText()); 
+        
+        try {
+            locationEventDao.createOrUpdate(event);
+            Log.d(Z.TAG, "Event saved!");
+            
+        } catch ( SQLException sqle ) {
+            Log.e(LocationListActivity.class.getName(), "Could not save locatione event", sqle);
+            throw new RuntimeException(sqle); 
             
         }
         
