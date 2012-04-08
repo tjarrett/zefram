@@ -75,6 +75,12 @@
             </intent-filter>
         </service>
         
+        <service android:name="com.viapx.zefram.services.LocationEventRingerService" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.viapx.services.LOCATION_EVENT_RINGER"/>
+            </intent-filter>
+        </service>
+        
         <uses-library android:name="com.google.android.maps" />
         
     </application>

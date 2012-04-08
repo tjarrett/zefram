@@ -3,6 +3,27 @@
     <action
         custom="false"
         package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventRingerService" 
+        extra="vibrate"
+        >Set Ringer To Vibrate</action>
+    
+    <action
+        custom="false"
+        package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventRingerService" 
+        extra="normal"
+        >Set Ringer To Normal</action>
+    
+    <action
+        custom="false"
+        package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventRingerService" 
+        extra="silent"
+        >Set Ringer To Silent</action>
+    
+    <action
+        custom="false"
+        package="com.viapx.zefram" 
         class="com.viapx.zefram.services.LocationEventWifiService" 
         extra="On"
         >Turn WIFI On</action>
