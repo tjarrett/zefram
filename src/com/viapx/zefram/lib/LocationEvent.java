@@ -11,17 +11,7 @@ import com.j256.ormlite.table.*;
  */
 @DatabaseTable(tableName="location_events")
 public class LocationEvent implements Serializable
-{
-    public enum Type 
-    {
-        Wifi,
-        Bluetooth,
-        GPS,
-        Ringer,
-        Custom
-        
-    }
-    
+{    
     /**
      * 
      */
@@ -38,9 +28,6 @@ public class LocationEvent implements Serializable
      */
     @DatabaseField(canBeNull=false, foreign=true)
     private Location location;
-    
-    @DatabaseField
-    private Type type;
     
     /**
      * True if this fires when entering the location, false if it fires when leaving the location
@@ -65,6 +52,12 @@ public class LocationEvent implements Serializable
      */
     @DatabaseField
     private String extra;
+    
+    /**
+     * The name to display
+     */
+    @DatabaseField
+    private String displayName;
     
     /**
      * @return the id
@@ -103,27 +96,7 @@ public class LocationEvent implements Serializable
         this.location = location;
         
     }//end setLocation
-    
-    /**
-     * Get the type of this event
-     * @return
-     */
-    public Type getType()
-    {
-        return type;
         
-    }//end getType
-    
-    /**
-     * Set the type of this events
-     * @param type
-     */
-    public void setType(Type type)
-    {
-        this.type = type;
-        
-    }//end setType
-    
     /**
      * Returns whether this event fires when entering (true) or leaving (false) a location
      * @return
@@ -203,5 +176,25 @@ public class LocationEvent implements Serializable
         return extra;
         
     }//end getExtra
+
+    /**
+     * Get the display name
+     * @return
+     */
+    public String getDisplayName()
+    {
+        return displayName;
+        
+    }//end getDisplayName
+
+    /**
+     * Set the display name
+     * @param displayName
+     */
+    public void setDisplayName(String displayName)
+    {
+        this.displayName = displayName;
+        
+    }//end setDisplayName
 
 }//end LocationEvent

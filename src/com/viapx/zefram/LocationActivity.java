@@ -47,11 +47,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LocationActivity extends MapActivity
@@ -218,6 +220,8 @@ public class LocationActivity extends MapActivity
     @Override
     protected void onStart()
     {
+        Log.d(Z.TAG, "In onStart");
+        
         //Set up the database connection
         databaseHelper = (DatabaseHelper)getDatabaseHelper();
         try {
@@ -230,37 +234,32 @@ public class LocationActivity extends MapActivity
             
         }
         
-        action = getIntent().getExtras().getString("action");
-        if ( "edit".equals(action) ) {
-            //Get the ID from the intent
-            int location_id = (int)getIntent().getExtras().getLong("location_id");
-            
-            //Load up location from the database
-            try {
-                //Get the location
-                location = locationDao.queryForId(location_id);
+        if ( location == null ) {
+            action = getIntent().getExtras().getString("action");
+            if ( "edit".equals(action) ) {
+                //Get the ID from the intent
+                int location_id = (int)getIntent().getExtras().getLong("location_id");
                 
-                //Populate the name field
-                locationNameField.setText(location.getName());
+                //Load up location from the database
+                try {
+                    //Get the location
+                    location = locationDao.queryForId(location_id);
+                    
+                    //Populate the name field
+                    locationNameField.setText(location.getName());
+                    
+                    //Populate the radius field...
+                    String radius = Integer.toString(location.getRadius());
+                    locationRadiusField.setText(radius);
+                    
+                } catch ( SQLException sqle ) {
+                    Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+                    throw new RuntimeException(sqle); 
+                    
+                }
                 
-                //Populate the radius field...
-                String radius = Integer.toString(location.getRadius());
-                locationRadiusField.setText(radius);
-                
-            } catch ( SQLException sqle ) {
-                Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
-                throw new RuntimeException(sqle); 
-                
-            }
-            
-        } else {
-            location = new Location();
-            LocationManager locationManager = (LocationManager)getSystemService(this.getApplicationContext().LOCATION_SERVICE);
-            
-            android.location.Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if ( lastLocation != null ) {
-                LocationUtils.centerMapViewOnLocation(mapView, lastLocation);
-                
+            } else {
+                location = new Location();            
             }
             
         }
@@ -274,9 +273,9 @@ public class LocationActivity extends MapActivity
      */
     @Override
     protected void onResume()
-    {
-        // TODO Auto-generated method stub
-        super.onResume();
+    {    
+        Log.d(Z.TAG, "In onResume");
+        Log.d(Z.TAG, "Location long: " + location.getLongitudeDegrees());
         
         //Set up our MapView
         mapView = (MapView)findViewById(R.id.mapview);
@@ -355,8 +354,25 @@ public class LocationActivity extends MapActivity
         
         mapView.setSatellite(false);
         
+        if ( location.getLatitude() == 0 && location.getLongitude() == 0 ) {
+            LocationManager locationManager = (LocationManager)getSystemService(this.getApplicationContext().LOCATION_SERVICE);
+            android.location.Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            
+            if ( lastLocation != null && mapView != null) {
+                LocationUtils.centerMapViewOnLocation(mapView, lastLocation);
+                
+            }
+            
+        } else {
+            mapController.animateTo(location.getGeoPoint());
+            
+        }
+        
+        mapView.invalidate();
+        
         //Show the events associated with this location
         eventList = (LinearLayout)findViewById(R.id.event_list);
+        eventList.removeAllViews();
         try {
             locationEvents = locationEventDao.queryForEq("location_id", location.getId());
             Log.d(Z.TAG, "I found " + locationEvents.size() + " events");
@@ -367,7 +383,35 @@ public class LocationActivity extends MapActivity
             
         }
         
+        for ( final LocationEvent event : locationEvents ) {
+            TextView row = (TextView)View.inflate(this, R.layout.location_event_list_event_item, null);
+            String when = ( event.getOnEnter() ) ? "When Arriving: " : "When Leaving: ";
+            row.setText(when + event.getDisplayName());
+            row.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    Intent i = new Intent(LocationActivity.this, LocationEventActivity.class);
+                    i.putExtra("action", "edit");
+                    i.putExtra("event_id", event.getId());
+                    i.putExtra("location_id", location.getId());
+                    
+                    startActivity(i);
+                    
+                }
+                
+            });
+            eventList.addView(row);
+            
+        }
         
+        //For my own debugging purposes, show the longitude and latitude
+        TextView longLatText = (TextView)findViewById(R.id.latitude_and_longtiude);
+        longLatText.setText("Long: " + location.getLongitudeDegrees() + "; Lat: " + location.getLatitudeDegrees());
+        
+        // TODO Auto-generated method stub
+        super.onResume();
         
     }
     
@@ -388,7 +432,7 @@ public class LocationActivity extends MapActivity
     }
     
     /* (non-Javadoc)
-     * @see com.google.android.maps.MapActivity#onStop()
+     * @see com.google.android.maps.MapActivity#onDestroy()
      */
     @Override
     protected void onDestroy()
@@ -403,9 +447,9 @@ public class LocationActivity extends MapActivity
             
         }
         
-        super.onStop();
+        super.onDestroy();
         
-    }//end onStop
+    }//end onDestroy
     
     protected Dialog onCreateDialog(int id)
     {
@@ -480,18 +524,20 @@ public class LocationActivity extends MapActivity
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
+        Log.d(Z.TAG, "In onActivityResult");
         if ( requestCode == INTENT_RESULT_LOCATION ) {
             if ( resultCode == RESULT_OK ) {
                 //A location was picked
                 int longitude = data.getExtras().getInt("longitude");
                 int latitude = data.getExtras().getInt("latitude");
                 
+                Log.d(Z.TAG, "Got back: " + latitude + ", " + longitude);
+                
                 //Update the object
                 location.setLatitude(latitude);
                 location.setLongitude(longitude);
                 
-                //Move the map
-                GeoPoint geoPoint = location.getGeoPoint();               
+                Log.d(Z.TAG, "Location long: " + location.getLongitudeDegrees());
                 
             } else if ( requestCode == INTENT_RESULT_EVENT ) {
                 
@@ -540,7 +586,7 @@ public class LocationActivity extends MapActivity
     /**
      * Create or save the currently displayed location
      */
-    private void saveLocation()
+    private boolean saveLocation()
     {
         //Check that required fields are filled out
         String locationName = locationNameField.getText().toString();
@@ -548,7 +594,7 @@ public class LocationActivity extends MapActivity
         //If something is wrong with the name, complain
         if ( locationName == null || "".equals(locationName.trim()) ) {
             showDialog(DIALOG_LOCATION_NAME_INVALID);
-            return;
+            return false;
             
         }
         
@@ -564,7 +610,7 @@ public class LocationActivity extends MapActivity
         } catch ( NumberFormatException nfe ) {
             Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
             //todo: show dialog
-            return;
+            return false;
             
         }
         
@@ -586,6 +632,8 @@ public class LocationActivity extends MapActivity
             throw new RuntimeException(sqle); 
             
         }
+        
+        return true;
         
     }//end saveLocation
     
@@ -624,6 +672,10 @@ public class LocationActivity extends MapActivity
     
     private void showLocationEventActivity(Integer id)
     {
+        if ( !saveLocation() ) {
+            return;
+        }
+        
         //Figure out if we are adding or not
         boolean adding = ( id == null );
         String action = ( adding ) ? "add" : "edit";
@@ -635,6 +687,8 @@ public class LocationActivity extends MapActivity
             i.putExtra("event_id", id);
             
         }
+        
+        i.putExtra("location_id", location.getId());
         
         startActivity(i);
         

@@ -81,7 +81,7 @@ public class LocationListActivity extends Activity
                  R.layout.location_list_item, 
                  locationCursor, 
                  new String[]{"name", "radius"},
-                 new int[]{R.id.location_name, R.id.radius});
+                 new int[]{R.id.location_name});
             
         } catch ( SQLException sqle ) {
             Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);

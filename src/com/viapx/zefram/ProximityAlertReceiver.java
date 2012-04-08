@@ -88,7 +88,7 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         }
         
         for ( LocationEvent event : events ) {            
-            Log.d(Z.TAG, "Found a " + event.getType() + " event");
+            Log.d(Z.TAG, "Found a event");
             Intent serviceIntent = new Intent();
             
             serviceIntent.setComponent(new ComponentName(event.getServicePackageName(), event.getServiceClassName()));

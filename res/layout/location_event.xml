@@ -11,28 +11,21 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <RadioGroup
-        android:id="@+id/radioGroup1"
+        android:id="@+id/location_event_radio_button_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" >
-
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/location_event_arriving_radio_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/location_event_arriving_radio_label" />
 
             <RadioButton
-                android:id="@+id/radioButton1"
+                android:id="@+id/location_event_leaving_radio_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/location_event_leaving_radio_label" />
-        </LinearLayout>
     </RadioGroup>
 
     <View
@@ -43,22 +36,46 @@
         android:background="#FF96979E" />
 
         <TextView
-            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/location_event_action_label"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <Spinner
-            android:id="@+id/spinner1"
+            android:id="@+id/location_event_action_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:prompt="@string/location_event_action_spinner_prompt" />
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
+            android:id="@+id/location_event_extra_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
         </LinearLayout>
 
+        <LinearLayout 
+            android:id="@+id/footer" 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" 
+            android:orientation="horizontal" 
+            style="@android:style/ButtonBar">
+        
+                <Button
+                    android:id="@+id/location_done_button" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/location_done_button_text"  
+                    />
+                    
+                <Button
+                    android:id="@+id/location_cancel_button" 
+                    android:layout_width="wrap_content" 
+                    android:layout_height="wrap_content" 
+                    android:layout_weight="1"
+                    android:text="@string/location_cancel_button_text"
+                    />
+        </LinearLayout>
+        
 </LinearLayout>

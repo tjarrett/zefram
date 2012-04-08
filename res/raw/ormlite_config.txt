@@ -1,5 +1,5 @@
 #
-# generated on 2012/03/31 12:45:58
+# generated on 2012/04/08 03:18:58
 #
 # --table-start--
 dataClass=com.viapx.zefram.lib.Location
@@ -42,9 +42,6 @@ canBeNull=false
 foreign=true
 # --field-end--
 # --field-start--
-fieldName=type
-# --field-end--
-# --field-start--
 fieldName=onEnter
 canBeNull=false
 # --field-end--
@@ -58,6 +55,9 @@ canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=extra
+# --field-end--
+# --field-start--
+fieldName=displayName
 # --field-end--
 # --table-fields-end--
 # --table-end--

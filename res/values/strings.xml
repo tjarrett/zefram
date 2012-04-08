@@ -21,5 +21,6 @@
     <string name="location_event_arriving_radio_label">Arriving</string>
     <string name="location_event_leaving_radio_label">Leaving</string>
     <string name="location_event_action_label">What should this event do?</string>
+    <string name="location_event_action_spinner_prompt">Choose an action</string>
     
 </resources>

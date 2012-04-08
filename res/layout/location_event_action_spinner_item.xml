@@ -8,7 +8,7 @@
         android:layout_width="match_parent" 
         android:layout_height="wrap_content" 
         android:padding="16dp"
-        android:id="@+id/location_name"
+        android:id="@+id/location_event_action_spinner_item"
     />
 
 </LinearLayout>
