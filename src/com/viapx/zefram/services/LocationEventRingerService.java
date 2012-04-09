@@ -6,8 +6,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.util.Log;
+import android.widget.Toast;
 
-public class LocationEventRingerService extends IntentService
+public class LocationEventRingerService extends LocationEventService
 {
     /**
      * The constructor
@@ -38,12 +39,15 @@ public class LocationEventRingerService extends IntentService
         // Set the appropriate ringer level
         if ( "vibrate".equals(extra.toLowerCase()) ) {
             manager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+            showToast("Zefram just set your ringer to vibrate");
 
         } else if ( "normal".equals(extra.toLowerCase()) ) {
             manager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-
+            showToast("Zefram just set your ringer to normal");
+            
         } else if ( "silent".equals(extra.toLowerCase()) ) {
             manager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+            showToast("Zefram just set your ringer to silent");
             
         }
 

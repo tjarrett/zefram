@@ -6,6 +6,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * The service that handles turning off and on Wifi
@@ -13,7 +14,7 @@ import android.util.Log;
  * @author tjarrett
  * @see http://developer.android.com/guide/topics/fundamentals/services.html
  */
-public class LocationEventWifiService extends IntentService
+public class LocationEventWifiService extends LocationEventService
 {
     /**
      * The constructor
@@ -47,9 +48,11 @@ public class LocationEventWifiService extends IntentService
         // Turn it off or on as appropriate
         if ( "off".equals(extra.toLowerCase()) ) {
             wm.setWifiEnabled(false);
+            showToast("Zefram just turned your wifi off");
 
         } else if ( "on".equals(extra.toLowerCase()) ) {
             wm.setWifiEnabled(true);
+            showToast("Zefram just turned your wifi on");
 
         }
 

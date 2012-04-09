@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class ProximityAlertReceiver extends BroadcastReceiver
 {
@@ -70,7 +71,9 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         Log.d(Z.TAG, "Got location: " + location.getName());
         
         boolean entering = intent.getExtras().getBoolean(LocationManager.KEY_PROXIMITY_ENTERING);
-        Log.d(Z.TAG, "We are " + (( entering ) ? "entering" : "leaving") + " " + location.getName());
+        String comingOrGoing = ( entering ) ? "entering" : "leaving";
+        Log.d(Z.TAG, "We are " + comingOrGoing + " " + location.getName());
+        Toast.makeText(context.getApplicationContext(), "Zefram detected that you are " + comingOrGoing + " " + location.getName(), Toast.LENGTH_SHORT).show();
         
         Map<String, Object> fieldValues = new HashMap<String, Object>();
         fieldValues.put("location_id", location);
