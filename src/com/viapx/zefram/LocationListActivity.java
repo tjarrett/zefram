@@ -14,13 +14,16 @@ import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -55,14 +58,13 @@ public class LocationListActivity extends Activity
         setContentView(R.layout.location_list);
         
     }//end onCreate
-    
+      
     /* (non-Javadoc)
      * @see android.app.Activity#onStart()
      */
     @Override
     protected void onStart()
-    {
-        
+    {        
         this.startService(new Intent(this, ZeframLocationRegistrationService.class));
         
         //Go get the database helper

@@ -24,6 +24,20 @@
     <action
         custom="false"
         package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventBluetoothService" 
+        extra="On"
+        >Turn Bluetooth On</action>
+    
+    <action
+        custom="false"
+        package="com.viapx.zefram" 
+        class="com.viapx.zefram.services.LocationEventBluetoothService" 
+        extra="Off"
+        >Turn Bluetooth Off</action>
+    
+    <action
+        custom="false"
+        package="com.viapx.zefram" 
         class="com.viapx.zefram.services.LocationEventWifiService" 
         extra="On"
         >Turn WIFI On</action>

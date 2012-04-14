@@ -70,8 +70,41 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         //Still here? Then we got our location and now we can do the other stuff that we need to do...
         Log.d(Z.TAG, "Got location: " + location.getName());
         
+        LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        android.location.Location lastLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        Log.d(Z.TAG, "FIX Got location from passive provider of " + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + " which is about " + lastLocation.distanceTo(location.getAndroidLocation()) + " from " + location.getName());
+        
+        
+        float maxDistance = lastLocation.getAccuracy() + (float)location.getRadius();
+        Log.d(Z.TAG, "FIX Last Location Accuracy: " + lastLocation.getAccuracy());
+        Log.d(Z.TAG, "FIX The max tolerable distance would be... " + maxDistance);
+        
         boolean entering = intent.getExtras().getBoolean(LocationManager.KEY_PROXIMITY_ENTERING);
         String comingOrGoing = ( entering ) ? "entering" : "leaving";
+        
+        Location lastKnownLocation = ZeframLocationRegistrationService.getLastKnownLocation();
+        if ( entering ) {
+            if ( lastKnownLocation != null && lastKnownLocation.getId() == location.getId() ) {
+                Log.d(Z.TAG, "Aborting because lastKnownLocation matches currently entering location...");
+                return;
+                
+            } else {
+                ZeframLocationRegistrationService.setLastKnownLocation(location);
+                
+            }
+            
+        } else {
+            if ( lastKnownLocation == null ) {
+                Log.d(Z.TAG, "Aborting because lastKnownLocation also null");
+                return;
+                
+            } else {
+                ZeframLocationRegistrationService.setLastKnownLocation(null);
+                
+            }
+            
+        }
+        
         Log.d(Z.TAG, "We are " + comingOrGoing + " " + location.getName());
         Toast.makeText(context.getApplicationContext(), "Zefram detected that you are " + comingOrGoing + " " + location.getName(), Toast.LENGTH_SHORT).show();
         

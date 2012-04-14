@@ -2,6 +2,8 @@ package com.viapx.zefram.lib;
 
 import java.util.List;
 
+import android.location.LocationManager;
+
 import com.google.android.maps.GeoPoint;
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
@@ -212,5 +214,18 @@ public class Location
         return new GeoPoint(getLatitude(), getLongitude());
         
     }//end getGeoPoint
+    
+    /**
+     * Convert this location into an android.location.Location object
+     * @return
+     */
+    public android.location.Location getAndroidLocation()
+    {
+        android.location.Location l = new android.location.Location(LocationManager.PASSIVE_PROVIDER);
+        l.setLatitude(this.getLatitudeDegrees());
+        l.setLongitude(this.getLongitudeDegrees());
+        return l;
+        
+    }
 
 }//end Location

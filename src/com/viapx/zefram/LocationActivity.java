@@ -335,6 +335,12 @@ public class LocationActivity extends MapActivity
                 //Toast.makeText(getApplicationContext(), "Single tap on map", Toast.LENGTH_LONG).show();
                 //Call the "Edit" activity explicitly
                 Intent i = new Intent(LocationActivity.this, ZeframActivity.class);
+                
+                if ( "edit".equals(action) ) {
+                    i.putExtra("location_id", location.getId());
+                    
+                }
+                
                 startActivityForResult(i, INTENT_RESULT_LOCATION);  
                 return true;
             }

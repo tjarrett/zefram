@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.GET_TASKS"/> 
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -72,6 +73,12 @@
         <service android:name="com.viapx.zefram.services.LocationEventWifiService" android:enabled="true">
             <intent-filter>
                 <action android:name="com.viapx.services.LOCATION_EVENT_WIFI"/>
+            </intent-filter>
+        </service>
+        
+        <service android:name="com.viapx.zefram.services.LocationEventBluetoothService" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.viapx.services.LOCATION_EVENT_BLUETOOTH"/>
             </intent-filter>
         </service>
         

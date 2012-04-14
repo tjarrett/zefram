@@ -1,5 +1,7 @@
 package com.viapx.zefram;
 
+import java.sql.SQLException;
+
 import com.google.android.maps.GeoPoint;
 
 import com.google.android.maps.MapActivity;
@@ -9,6 +11,7 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -72,6 +75,16 @@ public class ZeframActivity extends MapActivity
      * Whether or not we are showing the satellite view
      */
     private boolean satelliteView = false;
+    
+    /**
+     * 
+     */
+    private Dao<Location, Integer> locationDao;
+    
+    /**
+     * 
+     */
+    private Location location = null;
 
     /** Called when the activity is first created. */
     @Override
@@ -170,7 +183,6 @@ public class ZeframActivity extends MapActivity
             @Override
             public void run()
             {
-                Log.d("Tim", "Animated to location...");
                 mapController.animateTo(userLocationOverlay.getMyLocation());
 
             }// end run
@@ -183,11 +195,40 @@ public class ZeframActivity extends MapActivity
         userLocationOverlay.enableMyLocation();
         
         //Get our drawable icon
-        Drawable marker = getResources().getDrawable(R.drawable.marker);
-        marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
-        
-        //Now add our locations overlay...
+        Drawable marker = getResources().getDrawable(R.drawable.better_marker_2);
+        marker.setBounds(0, 0, marker.getIntrinsicWidth()/4, marker.getIntrinsicHeight()/4);
         locationsOverlay = new LocationsOverlay(marker);
+        
+        
+        //Set up the database connection
+        databaseHelper = (DatabaseHelper)getDatabaseHelper();
+        try {
+            locationDao = databaseHelper.getDao(Location.class);
+            
+        } catch ( SQLException sqle ) {
+            Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+            throw new RuntimeException(sqle); 
+            
+        }
+        
+        Integer locationId = getIntent().getExtras().getInt("location_id");
+        if ( locationId != null ) {
+            //Load up location from the database
+            try {
+                //Get the location
+                location = locationDao.queryForId(locationId);
+                
+                //Now add our locations overlay...
+                locationsOverlay.add(location);
+                
+            } catch ( SQLException sqle ) {
+                Log.e(LocationListActivity.class.getName(), "Could not get location dao", sqle);
+                throw new RuntimeException(sqle); 
+                
+            }
+            
+        }
+        
         mapView.getOverlays().add(locationsOverlay);
         
         //Hook up our satellite button
@@ -251,5 +292,15 @@ public class ZeframActivity extends MapActivity
         return false;
         
     }//end isRouteDisplayed
+    
+    /**
+     * Get the OrmLite database helper for this Android project
+     * @return
+     */
+    private OrmLiteSqliteOpenHelper getDatabaseHelper()
+    {
+        return ZeframLocationRegistrationService.getDatabaseHelper(getApplicationContext()); 
+        
+    }//end getDatabaseHelper
 
 }//end ZeframActivity

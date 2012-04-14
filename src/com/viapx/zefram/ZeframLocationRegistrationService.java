@@ -39,6 +39,8 @@ public class ZeframLocationRegistrationService extends Service
     
     static private final String PROX_ALERT_INTENT = "com.viapx.zefram.PROXIMITY_ALERT";
     
+    static private Location lastLocation = null;
+    
     private Timer timer = new Timer();
     
     private LocationManager locationManager;
@@ -335,6 +337,21 @@ public class ZeframLocationRegistrationService extends Service
         return OpenHelperManager.getHelper(context.getApplicationContext(), DatabaseHelper.class);
         
     }//end getDatabaseHelper
+    
+    static public Location getLastKnownLocation()
+    {
+        return lastLocation;
+        
+    }
+    
+    static public void setLastKnownLocation(Location location)
+    {
+        synchronized(PROX_ALERT_INTENT) {
+            lastLocation = location;
+            
+        }
+        
+    }
     
     
 
