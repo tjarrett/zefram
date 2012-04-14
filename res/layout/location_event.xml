@@ -1,81 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/location_event_when_occur_label"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <RadioGroup
-        android:id="@+id/location_event_radio_button_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-            <RadioButton
-                android:id="@+id/location_event_arriving_radio_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/location_event_arriving_radio_label" />
-
-            <RadioButton
-                android:id="@+id/location_event_leaving_radio_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/location_event_leaving_radio_label" />
-    </RadioGroup>
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:background="#FF96979E" />
-
+    android:layout_height="match_parent" >
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+    
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location_event_action_label"
+            android:text="@string/location_event_when_occur_label"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <Spinner
-            android:id="@+id/location_event_action_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:prompt="@string/location_event_action_spinner_prompt" />
-
-        <LinearLayout
-            android:id="@+id/location_event_extra_area"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
-
-        <LinearLayout 
-            android:id="@+id/footer" 
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" 
-            android:orientation="horizontal" 
-            style="@android:style/ButtonBar">
-        
-                <Button
-                    android:id="@+id/location_done_button" 
+    
+        <RadioGroup
+            android:id="@+id/location_event_radio_button_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+    
+                <RadioButton
+                    android:id="@+id/location_event_arriving_radio_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/location_done_button_text"  
-                    />
+                    android:text="@string/location_event_arriving_radio_label" />
+    
+                <RadioButton
+                    android:id="@+id/location_event_leaving_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/location_event_leaving_radio_label" />
+        </RadioGroup>
+    
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="#FF96979E" />
+    
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location_event_action_label"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+            <Spinner
+                android:id="@+id/location_event_action_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:prompt="@string/location_event_action_spinner_prompt" />
+    
+            <LinearLayout
+                android:id="@+id/location_event_extra_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+    
+                <LinearLayout
+                    android:id="@+id/location_event_custom_field_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" 
+                    android:layout_margin="0dip" 
+                    android:visibility="gone">
                     
-                <Button
-                    android:id="@+id/location_cancel_button" 
-                    android:layout_width="wrap_content" 
-                    android:layout_height="wrap_content" 
-                    android:layout_weight="1"
-                    android:text="@string/location_cancel_button_text"
-                    />
-        </LinearLayout>
-        
-</LinearLayout>
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginBottom="20dip"
+                        android:layout_marginTop="20dip"
+                        android:background="#FF96979E" />
+    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location_event_action_custom_package_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+                    <EditText
+                        android:id="@+id/location_event_action_custom_package"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/location_event_action_package_hint" />
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location_event_action_custom_class_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+                    <EditText
+                        android:id="@+id/location_event_action_custom_class"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="@string/location_event_action_class_hint" />
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location_event_action_custom_extra_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+                    <EditText
+                        android:id="@+id/location_event_action_custom_extra"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" 
+                        android:layout_weight="1" 
+                        android:hint="@string/location_event_action_custom_hint"  />
+                    
+                </LinearLayout>
+    
+            </LinearLayout>
+    
+            <LinearLayout 
+                android:id="@+id/footer" 
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" 
+                android:orientation="horizontal" 
+                style="@android:style/ButtonBar">
+            
+                    <Button
+                        android:id="@+id/location_done_button" 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/location_done_button_text"  
+                        />
+                        
+                    <Button
+                        android:id="@+id/location_cancel_button" 
+                        android:layout_width="wrap_content" 
+                        android:layout_height="wrap_content" 
+                        android:layout_weight="1"
+                        android:text="@string/location_cancel_button_text"
+                        />
+            </LinearLayout>
+            
+    </LinearLayout>
+</ScrollView>
+
+
+
+

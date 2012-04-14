@@ -17,19 +17,31 @@ import com.viapx.zefram.lib.LocationEventAction;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 public class LocationEventActivity extends Activity
 {
+    static final int DIALOG_SELECT_EVENT_OCCUR = 1; 
+    
+    static final int DIALOG_SELECT_EVENT_ACTION = 2;
+    
     /**
      * The actions to display in the spinner (keyed by string displayed in the spinner)
      */
@@ -46,6 +58,8 @@ public class LocationEventActivity extends Activity
     private Location location;
     
     private LocationEvent event;
+    
+    private LinearLayout customFieldContainer;
     
     /**
      * The DatabaseHelper for access our SQLite database
@@ -92,7 +106,6 @@ public class LocationEventActivity extends Activity
             public void onClick(View view)
             {
                 saveEvent();
-                finish();
                 
             }
             
@@ -110,6 +123,9 @@ public class LocationEventActivity extends Activity
             }
             
         });
+        
+        //Get the container for custom fields
+        customFieldContainer = (LinearLayout)findViewById(R.id.location_event_custom_field_container);
         
     }//end onCreate
     
@@ -202,6 +218,52 @@ public class LocationEventActivity extends Activity
         super.onDestroy();
     }
     
+    public Dialog onCreateDialog(int id)
+    {
+        Dialog dialog = null;
+        AlertDialog.Builder builder = null;
+        switch ( id ) {
+            case DIALOG_SELECT_EVENT_OCCUR:
+                builder = new AlertDialog.Builder(this);
+                builder.setMessage("You must select when this event should occur")
+                .setTitle("ERROR")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        // TODO Auto-generated method stub
+                        
+                    }
+                });
+                dialog = builder.create();
+                break;
+            
+            case DIALOG_SELECT_EVENT_ACTION:
+                builder = new AlertDialog.Builder(this);
+                builder.setMessage("You must select an event action.")
+                .setTitle("ERROR")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        
+                    }
+                    
+                });
+                dialog = builder.create();
+                break;
+            
+        }
+        
+        return dialog;
+        
+    }
+    
     private void populateActionsFromXml() throws XmlPullParserException, IOException
     {
         actions = new Hashtable<String, LocationEventAction>();
@@ -266,6 +328,33 @@ public class LocationEventActivity extends Activity
         
         actionSpinner.setAdapter(adapter);
         
+        actionSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                //Figure out which action we got...
+                LocationEventAction action = actions.get(spinnerActions.get(position));
+                
+                if ( action != null && "Call Custom Service".equals(action.getText()) ) {
+                    showCustomFields();
+                    
+                } else {
+                    hideCustomFields();
+                    
+                }
+                
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+            
+        });
+        
     }//end buildEventActionSpinner
     
     /**
@@ -296,7 +385,8 @@ public class LocationEventActivity extends Activity
             onEnter = false;
             
         } else {
-            //show error message
+            showDialog(DIALOG_SELECT_EVENT_OCCUR);
+            return;
             
         }
         
@@ -307,7 +397,8 @@ public class LocationEventActivity extends Activity
             lea = actions.get(selectedItem);
             
         } else {
-            //show error message
+            showDialog(DIALOG_SELECT_EVENT_ACTION);
+            return;
         }
         
         
@@ -316,12 +407,34 @@ public class LocationEventActivity extends Activity
             
         }
         
-        event.setLocation(location);  
-        event.setOnEnter(onEnter);
-        event.setServicePackageName(lea.getActionPackage());
-        event.setServiceClassName(lea.getActionClass());
-        event.setExtra(lea.getExtra());
-        event.setDisplayName(lea.getText()); 
+
+        
+        if ( customFieldContainer.getVisibility() == View.VISIBLE ) {
+            EditText viewPackageName = (EditText)findViewById(R.id.location_event_action_custom_package);
+            EditText viewClassName = (EditText)findViewById(R.id.location_event_action_custom_class);
+            EditText viewExtra = (EditText)findViewById(R.id.location_event_action_custom_extra);
+            
+            String classOnly = viewClassName.getText().toString();
+            classOnly = classOnly.substring(classOnly.lastIndexOf(".")+1);
+            
+            event.setLocation(location);
+            event.setOnEnter(onEnter);
+            event.setServicePackageName(viewPackageName.getText().toString());
+            event.setServiceClassName(viewClassName.getText().toString());
+            event.setExtra(viewExtra.getText().toString());
+            event.setDisplayName("Run custom class " + classOnly); 
+            
+        } else {
+            event.setLocation(location);  
+            event.setOnEnter(onEnter);
+            event.setServicePackageName(lea.getActionPackage());
+            event.setServiceClassName(lea.getActionClass());
+            event.setExtra(lea.getExtra());
+            event.setDisplayName(lea.getText()); 
+            
+        }
+        
+
         
         try {
             locationEventDao.createOrUpdate(event);
@@ -333,8 +446,22 @@ public class LocationEventActivity extends Activity
             
         }
         
-        
-        
+        finish();
+
     }//end saveEvent
+    
+    private void showCustomFields()
+    {
+        customFieldContainer.setVisibility(View.VISIBLE);
+        
+        
+    }
+    
+    private void hideCustomFields()
+    {
+        customFieldContainer.setVisibility(View.GONE);
+        
+        
+    }
 
 }
