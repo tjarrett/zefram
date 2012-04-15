@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -376,41 +377,8 @@ public class LocationActivity extends MapActivity
         
         mapView.invalidate();
         
-        //Show the events associated with this location
-        eventList = (LinearLayout)findViewById(R.id.event_list);
-        eventList.removeAllViews();
-        try {
-            locationEvents = locationEventDao.queryForEq("location_id", location.getId());
-            Log.d(Z.TAG, "I found " + locationEvents.size() + " events");
-            
-        } catch ( SQLException sqle ) {
-            Log.e(LocationListActivity.class.getName(), "Unable to query for location events", sqle);
-            throw new RuntimeException(sqle); 
-            
-        }
-        
-        for ( final LocationEvent event : locationEvents ) {
-            TextView row = (TextView)View.inflate(this, R.layout.location_event_list_event_item, null);
-            String when = ( event.getOnEnter() ) ? "When Arriving: " : "When Leaving: ";
-            row.setText(when + event.getDisplayName());
-            row.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v)
-                {
-                    Intent i = new Intent(LocationActivity.this, LocationEventActivity.class);
-                    i.putExtra("action", "edit");
-                    i.putExtra("event_id", event.getId());
-                    i.putExtra("location_id", location.getId());
-                    
-                    startActivity(i);
-                    
-                }
-                
-            });
-            eventList.addView(row);
-            
-        }
+        //Redraw the event list
+        redrawEventList();
         
         //For my own debugging purposes, show the longitude and latitude
         TextView longLatText = (TextView)findViewById(R.id.latitude_and_longtiude);
@@ -553,6 +521,72 @@ public class LocationActivity extends MapActivity
         }
         
     }//end onActivityResult
+    
+    private void redrawEventList()
+    {
+        //Show the events associated with this location
+        eventList = (LinearLayout)findViewById(R.id.event_list);
+        eventList.removeAllViews();
+        try {
+            locationEvents = locationEventDao.queryForEq("location_id", location.getId());
+            Log.d(Z.TAG, "I found " + locationEvents.size() + " events");
+            
+        } catch ( SQLException sqle ) {
+            Log.e(LocationListActivity.class.getName(), "Unable to query for location events", sqle);
+            throw new RuntimeException(sqle); 
+            
+        }
+        
+        for ( final LocationEvent event : locationEvents ) {
+            TextView row = (TextView)View.inflate(this, R.layout.location_event_list_event_item, null);
+            String when = ( event.getOnEnter() ) ? "When Arriving: " : "When Leaving: ";
+            row.setText(when + event.getDisplayName());
+            /*row.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v)
+                {
+                    Intent i = new Intent(LocationActivity.this, LocationEventActivity.class);
+                    i.putExtra("action", "edit");
+                    i.putExtra("event_id", event.getId());
+                    i.putExtra("location_id", location.getId());
+                    
+                    startActivity(i);
+                    
+                }
+                
+            });*/
+            row.setOnLongClickListener(new OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v)
+                {
+                    new AlertDialog.Builder(LocationActivity.this)
+                    .setTitle("Delete " + event.getDisplayName() + "?")
+                    .setMessage("Are you really really sure that you want to delete " + event.getDisplayName() + "?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            try {
+                                locationEventDao.delete(event);
+                            } catch ( SQLException sqle ) {
+                                Log.e(LocationListActivity.class.getName(), "Unable to delete " + event.getDisplayName(), sqle);
+                                throw new RuntimeException(sqle); 
+                                
+                            }
+                            redrawEventList();
+                        }})
+                     .setNegativeButton(android.R.string.no, null).show();
+
+                    return true;
+                    
+                }});
+            eventList.addView(row);
+            
+        }
+        
+    }//end redrawEventList
     
     private void removeProximityAlertForLocation(Location location, boolean delete)
     {
