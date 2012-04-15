@@ -57,16 +57,30 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * The activity for viewing/editing a Zefram location
+ * 
+ * @author tjarrett
+ */
 public class LocationActivity extends MapActivity
 {   
+    /**
+     * Dialog ID for alerting that a location name is invalid
+     */
     static final int DIALOG_LOCATION_NAME_INVALID = 0;
     
+    /**
+     * Result code for an intent coming back from the ZeframActivity (picking the location on a map)
+     */
     static final int INTENT_RESULT_LOCATION = 0;
     
+    /**
+     * Result code for an intent coming back from adding an event
+     */
     static final int INTENT_RESULT_EVENT = 1;
     
     /**
-     * 
+     * The current location that is being added/editted/views
      */
     private Location location;
     
@@ -76,42 +90,42 @@ public class LocationActivity extends MapActivity
     private DatabaseHelper databaseHelper = null;
     
     /**
-     * 
+     * Location Data Access Object
      */
     private Dao<Location, Integer> locationDao;
     
     /**
-     * 
+     * LocationEvent Data Access Object
      */
     private Dao<LocationEvent, Integer> locationEventDao;
     
     /**
-     * 
+     * The location name field
      */
     private EditText locationNameField;
     
     /**
-     * 
+     * The location radius field
      */
     private EditText locationRadiusField;
 
     /**
-     * 
+     * Action that indicates whether we are adding or editing
      */
     private String action;
 
     /**
-     * 
+     * Our MapView showing the selected location on the map
      */
     private MapView mapView;
 
     /**
-     * 
+     * Our MapView's controller -- just for ease of use
      */
     private MapController mapController;
     
     /**
-     * 
+     * Reference for sending messages to the ZeframLocationRegistrationService
      */
     private Messenger locationService = null;
     
@@ -120,9 +134,11 @@ public class LocationActivity extends MapActivity
      */
     private LocationsOverlay locationsOverlay;
     
+    /**
+     * Our connection to the ZeframLocationRegistrationService
+     */
     private ServiceConnection serviceConnection = new ServiceConnection()
     {
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service)
         {
@@ -138,8 +154,14 @@ public class LocationActivity extends MapActivity
         
     };
 
+    /**
+     * Reference to the item that contains the event list
+     */
     private LinearLayout eventList;
 
+    /**
+     * Our list of location events
+     */
     private List<LocationEvent> locationEvents;
     
     /** Called when the activity is first created. */
@@ -267,7 +289,8 @@ public class LocationActivity extends MapActivity
         
         // TODO Auto-generated method stub
         super.onStart();
-    }
+        
+    }//end onStart
     
     /* (non-Javadoc)
      * @see com.google.android.maps.MapActivity#onResume()
@@ -356,9 +379,9 @@ public class LocationActivity extends MapActivity
         //Now add our locations overlay...
         locationsOverlay = new LocationsOverlay(marker);
         locationsOverlay.add(location);
-        
         mapView.getOverlays().add(locationsOverlay);
         
+        //We never want satelitte mode
         mapView.setSatellite(false);
         
         if ( location.getLatitude() == 0 && location.getLongitude() == 0 ) {
@@ -375,6 +398,7 @@ public class LocationActivity extends MapActivity
             
         }
         
+        //Force a redraw
         mapView.invalidate();
         
         //Redraw the event list
@@ -387,7 +411,7 @@ public class LocationActivity extends MapActivity
         // TODO Auto-generated method stub
         super.onResume();
         
-    }
+    }//end onResume
     
     /* (non-Javadoc)
      * @see com.google.android.maps.MapActivity#onPause()
@@ -403,7 +427,7 @@ public class LocationActivity extends MapActivity
         eventList = null;
         locationEvents = null;
         
-    }
+    }//end onPause
     
     /* (non-Javadoc)
      * @see com.google.android.maps.MapActivity#onDestroy()
@@ -425,6 +449,9 @@ public class LocationActivity extends MapActivity
         
     }//end onDestroy
     
+    /**
+     * Called when a dialog is being created
+     */
     protected Dialog onCreateDialog(int id)
     {
         Dialog dialog = null;
@@ -491,7 +518,7 @@ public class LocationActivity extends MapActivity
     }//end onMenuItemSelected 
 
     /**
-     * 
+     * Called when an activity result is being returned...
      * @param requestCode
      * @param resultCode
      * @param data
@@ -513,15 +540,15 @@ public class LocationActivity extends MapActivity
                 
                 Log.d(Z.TAG, "Location long: " + location.getLongitudeDegrees());
                 
-            } else if ( requestCode == INTENT_RESULT_EVENT ) {
-                
-                
-            }
+            } 
             
         }
         
     }//end onActivityResult
     
+    /**
+     * Call this to force the event list to be redrawn from the database
+     */
     private void redrawEventList()
     {
         //Show the events associated with this location
@@ -541,21 +568,6 @@ public class LocationActivity extends MapActivity
             TextView row = (TextView)View.inflate(this, R.layout.location_event_list_event_item, null);
             String when = ( event.getOnEnter() ) ? "When Arriving: " : "When Leaving: ";
             row.setText(when + event.getDisplayName());
-            /*row.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v)
-                {
-                    Intent i = new Intent(LocationActivity.this, LocationEventActivity.class);
-                    i.putExtra("action", "edit");
-                    i.putExtra("event_id", event.getId());
-                    i.putExtra("location_id", location.getId());
-                    
-                    startActivity(i);
-                    
-                }
-                
-            });*/
             row.setOnLongClickListener(new OnLongClickListener() {
 
                 @Override
@@ -588,6 +600,11 @@ public class LocationActivity extends MapActivity
         
     }//end redrawEventList
     
+    /**
+     * Passes a request to remove a proximity alert for this location to the service responsible for ACTUALLY doing that work
+     * @param location      The location that we no longer want proximity alerts for
+     * @param delete        Whether we should delete this location from the database in addition
+     */
     private void removeProximityAlertForLocation(Location location, boolean delete)
     {
         Log.d(Z.TAG, "Unregistering location...");
@@ -605,8 +622,12 @@ public class LocationActivity extends MapActivity
             
         }
         
-    }
+    }//end removeProximityAlertForLocation
     
+    /**
+     * Add a proximity alert to the given location 
+     * @param location
+     */
     private void addProximityAlertForLocation(Location location)
     {
         Message msg = Message.obtain(null, ZeframLocationRegistrationService.MSG_REGISTER_LOCATION, location.getId(), -1, null);
@@ -620,8 +641,7 @@ public class LocationActivity extends MapActivity
            
        }        
         
-    }
-
+    }//end addProximityAlertForLocation
     
     /**
      * Create or save the currently displayed location
@@ -697,6 +717,9 @@ public class LocationActivity extends MapActivity
         
     }//end getDatabaseHelper
 
+    /**
+     * Needed as part of MapActivity... not really used...
+     */
     @Override
     protected boolean isRouteDisplayed()
     {
@@ -704,12 +727,19 @@ public class LocationActivity extends MapActivity
         
     }//end isRouteDisplayed
     
+    /**
+     * Show LocationEventActivity
+     */
     private void showLocationEventActivity()
     {
         showLocationEventActivity(null);
         
-    }
+    }//end showLocationEventActivity
     
+    /**
+     * Show the LocationEventActivity for the given event represented by id
+     * @param id    The id of the event to display, null if adding
+     */
     private void showLocationEventActivity(Integer id)
     {
         if ( !saveLocation() ) {
@@ -732,6 +762,6 @@ public class LocationActivity extends MapActivity
         
         startActivity(i);
         
-    }
+    }//end showLocationEventActivity
     
 }//end LocationActivity

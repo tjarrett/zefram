@@ -12,10 +12,20 @@ import com.viapx.zefram.lib.*;
  */
 public class DatabaseConfigUtil extends OrmLiteConfigUtil
 {
+    /**
+     * The "beans" that we want the database to be configured for
+     */
     public static final Class<?>[] classes = new Class[] { Location.class, LocationEvent.class };
 
+    /**
+     * Main
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception
     {
         writeConfigFile("ormlite_config.txt", classes);
-    }
-}
+        
+    }//end main
+    
+}//end DatabaseConfigUtil
