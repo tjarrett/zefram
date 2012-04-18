@@ -1,8 +1,6 @@
 package com.viapx.zefram;
 
 import java.sql.SQLException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -33,20 +31,33 @@ import android.util.Log;
  */
 public class ZeframLocationRegistrationService extends Service
 {
+    /**
+     * Message flag indicating that we want to register the given location
+     */
     static public final int MSG_REGISTER_LOCATION = 0;
     
+    /**
+     * Message flag indiciating that we want to unregister the given location
+     */
     static public final int MSG_UNREGISTER_LOCATION = 1;
     
+    /**
+     * The intent to be set in the proximity alert
+     */
     static private final String PROX_ALERT_INTENT = "com.viapx.zefram.PROXIMITY_ALERT";
     
+    /**
+     * The last location recorded (often null)
+     */
     static private Location lastLocation = null;
     
-    private Timer timer = new Timer();
-    
+    /**
+     * The location manager
+     */
     private LocationManager locationManager;
     
     /**
-     * 
+     * Intent filter for directing intents to the right place
      */
     private IntentFilter intentFilter;
     
@@ -59,11 +70,6 @@ public class ZeframLocationRegistrationService extends Service
      * The ORMLite DAO for locations
      */
     private Dao<Location, Integer> locationDao = null;
-    
-    /**
-     * The binder for this service
-     */
-    private final IBinder binder = new ZeframLocationRegistrationServiceBinder();
     
     /**
      * Keep track of whether or not the service is running
@@ -123,6 +129,9 @@ public class ZeframLocationRegistrationService extends Service
         
     });
 
+    /**
+     * The proximity alert broadcast receiver
+     */
     private BroadcastReceiver proximityAlertReceiver;
     
     /**
@@ -338,12 +347,20 @@ public class ZeframLocationRegistrationService extends Service
         
     }//end getDatabaseHelper
     
+    /**
+     * Return the last known location
+     * @return
+     */
     static public Location getLastKnownLocation()
     {
         return lastLocation;
         
-    }
+    }//end getLastKnownLocation
     
+    /**
+     * Set the last known location
+     * @param location
+     */
     static public void setLastKnownLocation(Location location)
     {
         synchronized(PROX_ALERT_INTENT) {
@@ -351,8 +368,7 @@ public class ZeframLocationRegistrationService extends Service
             
         }
         
-    }
-    
-    
+    }//end setLastKnownLocation
 
 }//end ZeframProximityService
+

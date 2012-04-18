@@ -22,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.viapx.zefram.lib.*;
 import com.viapx.zefram.lib.db.DatabaseHelper;
@@ -32,6 +31,7 @@ import com.viapx.zefram.overlays.LocationsOverlay;
 import android.view.GestureDetector.OnGestureListener;
 
 /**
+ * This is the map view where the user can pick from a map the location that they want to monitor
  * 
  * @author tjarrett
  *
@@ -39,10 +39,7 @@ import android.view.GestureDetector.OnGestureListener;
  * @see http://stackoverflow.com/questions/4646584/how-to-get-lat-and-long-on-touch-event-from-goole-map
  * @see http://code.google.com/p/mapview-overlay-manager/source/browse/trunk/OverlayManager/src/de/android1/overlaymanager/OverlayManager.java
  * @see http://stackoverflow.com/questions/2176397/drawing-a-line-path-on-google-maps
- * 
- * 
- * 
- * http://stackoverflow.com/questions/3605219/default-marker-for-android-google-mapview
+ * @see http://stackoverflow.com/questions/3605219/default-marker-for-android-google-mapview
  */
 public class ZeframActivity extends MapActivity
 {
@@ -77,12 +74,12 @@ public class ZeframActivity extends MapActivity
     private boolean satelliteView = false;
     
     /**
-     * 
+     * Our location data access object
      */
     private Dao<Location, Integer> locationDao;
     
     /**
-     * 
+     * Our location
      */
     private Location location = null;
 
@@ -285,6 +282,9 @@ public class ZeframActivity extends MapActivity
         
     }//end onDestroy
 
+    /**
+     * Whether or not the route is displayed (always not in this case)
+     */
     @Override
     protected boolean isRouteDisplayed()
     {

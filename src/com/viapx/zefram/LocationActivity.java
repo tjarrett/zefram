@@ -3,7 +3,6 @@ package com.viapx.zefram;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -32,12 +31,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.text.method.KeyListener;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,16 +40,11 @@ import android.view.GestureDetector.OnGestureListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * The activity for viewing/editing a Zefram location
@@ -385,7 +374,7 @@ public class LocationActivity extends MapActivity
         mapView.setSatellite(false);
         
         if ( location.getLatitude() == 0 && location.getLongitude() == 0 ) {
-            LocationManager locationManager = (LocationManager)getSystemService(this.getApplicationContext().LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
             android.location.Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             
             if ( lastLocation != null && mapView != null) {

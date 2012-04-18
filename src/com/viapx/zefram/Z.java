@@ -1,7 +1,7 @@
 package com.viapx.zefram;
 
 /**
- * 
+ * Convenient place to store our TAG for logging
  * @author tjarrett
  *
  */

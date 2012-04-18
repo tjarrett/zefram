@@ -13,7 +13,9 @@ import android.util.Log;
  */
 public class SystemStartupReceiver extends BroadcastReceiver
 {
-
+    /**
+     * Listen for a system startup and start up our service
+     */
     @Override
     public void onReceive(Context context, Intent intent)
     {

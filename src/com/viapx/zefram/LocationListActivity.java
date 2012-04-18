@@ -14,16 +14,10 @@ import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.db.DatabaseHelper;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,7 +28,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 /**
- * 
+ * Activity for displaying the list of locations being monitored by the application
  * @author tjarrett
  *
  */

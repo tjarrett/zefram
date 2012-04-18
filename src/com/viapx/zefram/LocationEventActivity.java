@@ -26,20 +26,29 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+/**
+ * The interface for adding a LocationEvent
+ * @author tjarrett
+ *
+ */
 public class LocationEventActivity extends Activity
 {
+    /**
+     * Dialog id for when an error message needs to be displayed because the "when should this event fire" question wasn't answered
+     */
     static final int DIALOG_SELECT_EVENT_OCCUR = 1; 
     
+    /**
+     * Dialog id for when an error messgage needs to be displayed because the "what should this event do" question wasn't answered
+     */
     static final int DIALOG_SELECT_EVENT_ACTION = 2;
     
     /**
@@ -47,18 +56,39 @@ public class LocationEventActivity extends Activity
      */
     private Map<String, LocationEventAction> actions;
     
+    /**
+     * Actions in the order that they are listed in the spinner
+     */
     private ArrayList<String> spinnerActions;
 
+    /**
+     * The spinner that actually holds the actions
+     */
     private Spinner actionSpinner;
     
+    /**
+     * Whether we are adding or editing -- defaulting to adding since I pulled the ability to edit...
+     */
     private String activityAction = "add";
     
+    /**
+     * The ID for this LocationEvent -- not needed anymore because I pulled the ability to edit...
+     */
     private Integer eventId = null;
     
+    /**
+     * The location that owns this event
+     */
     private Location location;
     
+    /**
+     * A reference to the event itself
+     */
     private LocationEvent event;
     
+    /**
+     * The container that has all of the custom fields (hidden by default)
+     */
     private LinearLayout customFieldContainer;
     
     /**
@@ -67,12 +97,12 @@ public class LocationEventActivity extends Activity
     private DatabaseHelper databaseHelper = null;
     
     /**
-     * 
+     * The Location Database Access Object
      */
     private Dao<Location, Integer> locationDao;
     
     /**
-     * 
+     * The LocationEvent Database Access Object
      */
     private Dao<LocationEvent, Integer> locationEventDao;
 
@@ -206,6 +236,9 @@ public class LocationEventActivity extends Activity
         
     }//end onStop
     
+    /* (non-Javadoc)
+     * @see android.app.Activity#onDestroy()
+     */
     protected void onDestroy()
     {
         //Release the database
@@ -216,8 +249,13 @@ public class LocationEventActivity extends Activity
         }
         
         super.onDestroy();
-    }
+        
+    }//end onDestroy
     
+    /**
+     * Called when creating a dialog
+     * @param id        The ID of the dialog
+     */
     public Dialog onCreateDialog(int id)
     {
         Dialog dialog = null;
@@ -258,12 +296,17 @@ public class LocationEventActivity extends Activity
                 dialog = builder.create();
                 break;
             
-        }
+        }//end switch
         
         return dialog;
         
-    }
+    }//end onCreateDialog
     
+    /**
+     * Go populate the action spinner from the database
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private void populateActionsFromXml() throws XmlPullParserException, IOException
     {
         actions = new Hashtable<String, LocationEventAction>();
@@ -312,8 +355,11 @@ public class LocationEventActivity extends Activity
         
         Log.d(Z.TAG, "At the end of running, we have " + actions.size() + " actions");
         
-    }
+    }//end populateActionsFromXml
     
+    /**
+     * Builds the Spinner for LocationEvent action
+     */
     private void buildEventActionSpinner()
     {
         //See http://www.mkyong.com/android/android-spinner-drop-down-list-example/
@@ -329,7 +375,9 @@ public class LocationEventActivity extends Activity
         actionSpinner.setAdapter(adapter);
         
         actionSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
+            /**
+             * 
+             */
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
@@ -344,8 +392,8 @@ public class LocationEventActivity extends Activity
                     
                 }
                 
-            }
-
+            }//end onItemSelected
+            
             @Override
             public void onNothingSelected(AdapterView<?> arg0)
             {
@@ -368,7 +416,7 @@ public class LocationEventActivity extends Activity
     }//end getDatabaseHelper
     
     /**
-     * 
+     * Persist the current event to the database and finalize this view
      */
     private void saveEvent()
     {
@@ -434,8 +482,6 @@ public class LocationEventActivity extends Activity
             
         }
         
-
-        
         try {
             locationEventDao.createOrUpdate(event);
             Log.d(Z.TAG, "Event saved!");
@@ -450,18 +496,23 @@ public class LocationEventActivity extends Activity
 
     }//end saveEvent
     
+    /**
+     * Show the custom fields
+     */
     private void showCustomFields()
     {
         customFieldContainer.setVisibility(View.VISIBLE);
-        
-        
-    }
+
+    }//end showCustomFields
     
+    /**
+     * Hide the custom fields
+     */
     private void hideCustomFields()
     {
         customFieldContainer.setVisibility(View.GONE);
-        
-        
-    }
 
-}
+    }//end hideCustomFields
+
+}//end LocationEventActivity
+

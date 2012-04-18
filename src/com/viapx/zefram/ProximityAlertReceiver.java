@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.LocationEvent;
@@ -19,6 +18,11 @@ import android.location.LocationManager;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * This class receives notifications from the Android OS when the user enters or leaves the proximity of a location
+ * @author tjarrett
+ *
+ */
 public class ProximityAlertReceiver extends BroadcastReceiver
 {
     /**
@@ -36,6 +40,9 @@ public class ProximityAlertReceiver extends BroadcastReceiver
      */
     private Dao<LocationEvent, Integer> locationEventDao = null;
 
+    /**
+     * Fired when a location is received
+     */
     @Override
     public void onReceive(Context context, Intent intent)
     {
@@ -70,6 +77,12 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         //Still here? Then we got our location and now we can do the other stuff that we need to do...
         Log.d(Z.TAG, "Got location: " + location.getName());
         
+        /*
+         * This is some experimental code I wrote trying to solve the problem of bopping in and out of a location if the 
+         * radius around that location was too small...
+         * 
+         * 
+         * 
         LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
         android.location.Location lastLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
         Log.d(Z.TAG, "FIX Got location from passive provider of " + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + " which is about " + lastLocation.distanceTo(location.getAndroidLocation()) + " from " + location.getName());
@@ -78,32 +91,11 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         float maxDistance = lastLocation.getAccuracy() + (float)location.getRadius();
         Log.d(Z.TAG, "FIX Last Location Accuracy: " + lastLocation.getAccuracy());
         Log.d(Z.TAG, "FIX The max tolerable distance would be... " + maxDistance);
+        */
         
+        //Figure out if we are entering or leaving the location
         boolean entering = intent.getExtras().getBoolean(LocationManager.KEY_PROXIMITY_ENTERING);
         String comingOrGoing = ( entering ) ? "entering" : "leaving";
-        
-        Location lastKnownLocation = ZeframLocationRegistrationService.getLastKnownLocation();
-        if ( entering ) {
-            if ( lastKnownLocation != null && lastKnownLocation.getId() == location.getId() ) {
-                Log.d(Z.TAG, "Aborting because lastKnownLocation matches currently entering location...");
-                return;
-                
-            } else {
-                ZeframLocationRegistrationService.setLastKnownLocation(location);
-                
-            }
-            
-        } else {
-            if ( lastKnownLocation == null ) {
-                Log.d(Z.TAG, "Aborting because lastKnownLocation also null");
-                return;
-                
-            } else {
-                ZeframLocationRegistrationService.setLastKnownLocation(null);
-                
-            }
-            
-        }
         
         Log.d(Z.TAG, "We are " + comingOrGoing + " " + location.getName());
         Toast.makeText(context.getApplicationContext(), "Zefram detected that you are " + comingOrGoing + " " + location.getName(), Toast.LENGTH_SHORT).show();
@@ -112,6 +104,7 @@ public class ProximityAlertReceiver extends BroadcastReceiver
         fieldValues.put("location_id", location);
         fieldValues.put("onEnter", entering);
         
+        //Figure out which event we have for this location
         List<LocationEvent> events;
         try {
             events = locationEventDao.queryForFieldValuesArgs(fieldValues);
@@ -123,6 +116,7 @@ public class ProximityAlertReceiver extends BroadcastReceiver
             
         }
         
+        //For each of the events we found, fire off the work to be done for that event
         for ( LocationEvent event : events ) {            
             Log.d(Z.TAG, "Found a event");
             Intent serviceIntent = new Intent();
