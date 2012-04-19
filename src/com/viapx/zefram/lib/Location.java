@@ -1,7 +1,5 @@
 package com.viapx.zefram.lib;
 
-import java.util.List;
-
 import android.location.LocationManager;
 
 import com.google.android.maps.GeoPoint;
@@ -56,11 +54,6 @@ public class Location
      */
     @DatabaseField
     private boolean active;
-    
-    /**
-     * The list of events
-     */
-    private List<LocationEvent> events;
 
     /**
      * @return the id
@@ -226,6 +219,6 @@ public class Location
         l.setLongitude(this.getLongitudeDegrees());
         return l;
         
-    }
+    }//end getAndroidLocation
 
 }//end Location

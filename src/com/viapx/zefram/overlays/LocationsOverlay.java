@@ -9,45 +9,57 @@ import android.graphics.Point;
 import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.viapx.zefram.lib.Location;
-import com.viapx.zefram.lib.LocationOverlayItem;
 
 /**
- * 
+ * An overlay for displaying Zefram location(s) on a MapView
  * @author tjarrett
  * @see https://github.com/commonsguy/cw-advandroid/blob/master/Maps/NooYawkTouch/src/com/commonsware/android/maptouch/NooYawk.java
  */
 public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
 {
+    /**
+     * The list of items to display
+     */
     private List<LocationOverlayItem> items = new ArrayList<LocationOverlayItem>();
     
+    /**
+     * Constructor
+     * @param defaultMarker     The icon to use as the default marker
+     */
     public LocationsOverlay(Drawable defaultMarker)
     {
         super(boundCenter(defaultMarker));
         
-        
         //Gotta call populate() before anything else can happen... since it's protected... easy to just call it here...
         //http://code.google.com/p/android/issues/detail?id=2035
         populate();
-    }
+        
+    }//end LocationsOverlay
     
+    /**
+     * Add a location to be displayed
+     * @param location
+     */
     public void add(Location location)
     {
-        GeoPoint geoPoint = location.getGeoPoint();
         LocationOverlayItem loi = new LocationOverlayItem(location);
-        
         add(loi);
         
-    }
+    }//end add
     
+    /**
+     * Add a LocationOverlayItem to the map
+     * @param location
+     */
     public void add(LocationOverlayItem location)
     {
         items.add(location);
         populate();
-    }
+        
+    }//end add
 
     /**
      * Return the item at that particular index
@@ -57,7 +69,7 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
     {
         return items.get(i);
         
-    }
+    }//end createItem
 
     /**
      * The number of items that we have
@@ -66,12 +78,17 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
     public int size()
     {
         return items.size();
-    }
+        
+    }//end size
     
+    /**
+     * Force things to be redrawn
+     */
     public void invalidate()
     {
         populate();
-    }
+        
+    }//end invalidate
 
     /* (non-Javadoc)
      * @see com.google.android.maps.ItemizedOverlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)
@@ -93,12 +110,28 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
         
         // TODO Auto-generated method stub
         super.draw(canvas, mapView, shadow);
-    }
+        
+    }//end draw
     
-    public static int metersToRadius(float meters, MapView map, double latitude) {
-        return (int) (map.getProjection().metersToEquatorPixels(meters) * (1 / android.util.FloatMath.cos((float)Math.toRadians(latitude))));         
-    }    
+    /**
+     * Convert meters to radius
+     * @param meters
+     * @param map
+     * @param latitude
+     * @return
+     */
+    public static int metersToRadius(float meters, MapView map, double latitude) 
+    {
+        return (int) (map.getProjection().metersToEquatorPixels(meters) * (1 / android.util.FloatMath.cos((float)Math.toRadians(latitude))));
+        
+    }//end metersToRadius    
     
+    /**
+     * Draw a circle around the location representing it's "geofence"
+     * @param canvas
+     * @param mapView
+     * @param location
+     */
     public void drawCircle(Canvas canvas, MapView mapView, Location location)
     {
         Point p = mapView.getProjection().toPixels(location.getGeoPoint(), null);
@@ -118,8 +151,6 @@ public class LocationsOverlay extends ItemizedOverlay<LocationOverlayItem>
         
         canvas.drawCircle(p.x, p.y, radius, paint);
         
-    }
+    }//end drawCircle
 
-    
-
-}
+}//end LocationsOverlay

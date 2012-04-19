@@ -2,12 +2,15 @@ package com.viapx.zefram.services;
 
 import com.viapx.zefram.Z;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.util.Log;
-import android.widget.Toast;
 
+/**
+ * Class for handling changes to the ringer
+ * @author tjarrett
+ *
+ */
 public class LocationEventRingerService extends LocationEventService
 {
     /**
@@ -20,6 +23,9 @@ public class LocationEventRingerService extends LocationEventService
 
     }// end LocationEventWifiService constructor
 
+    /**
+     * Handle an incoming intent
+     */
     @Override
     protected void onHandleIntent(Intent intent)
     {
@@ -51,7 +57,7 @@ public class LocationEventRingerService extends LocationEventService
             
         }
 
-    }
+    }//end onHandleIntent
     
     /**
      * When I didn't have this... the damn thing didn't work...
@@ -63,4 +69,4 @@ public class LocationEventRingerService extends LocationEventService
 
     }// end onStartCommand
 
-}
+}//end LocationEventRingerService

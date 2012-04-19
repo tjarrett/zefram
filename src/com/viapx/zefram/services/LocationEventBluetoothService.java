@@ -6,14 +6,26 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.util.Log;
 
+/**
+ * Class for handling Bluetooth changes
+ * @author tjarrett
+ *
+ */
 public class LocationEventBluetoothService extends LocationEventService
 {
+    /**
+     * Constructor
+     */
     public LocationEventBluetoothService()
     {
         super(LocationEventBluetoothService.class.getName());
         Log.d(Z.TAG, "LocationEventBluetoothService started");
-    }
+        
+    }//end LocationEventBluetoothService
 
+    /**
+     * Handle incoming intents
+     */
     @Override
     protected void onHandleIntent(Intent intent)
     {
@@ -39,7 +51,7 @@ public class LocationEventBluetoothService extends LocationEventService
             
         }
 
-    }
+    }//end onHandleIntent
     
     /**
      * When I didn't have this... the damn thing didn't work...
@@ -51,4 +63,4 @@ public class LocationEventBluetoothService extends LocationEventService
 
     }// end onStartCommand
 
-}
+}//end LocationEventBluetoothService

@@ -2,11 +2,9 @@ package com.viapx.zefram.services;
 
 import com.viapx.zefram.Z;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * The service that handles turning off and on Wifi

@@ -3,6 +3,11 @@ package com.viapx.zefram.lib;
 import android.location.Location;
 import com.google.android.maps.*;
 
+/**
+ * Utility class for doing some location conversions
+ * @author tjarrett
+ *
+ */
 public class LocationUtils
 {
     /**

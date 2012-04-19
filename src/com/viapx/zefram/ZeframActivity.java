@@ -136,14 +136,6 @@ public class ZeframActivity extends MapActivity
                 
                 setResult(Activity.RESULT_OK, result); 
                 finish();
-                /*Toast.makeText(getApplicationContext(), "Clicked at " + x + ", " + y, Toast.LENGTH_SHORT).show();
-                
-                LocationOverlayItem location = new LocationOverlayItem(geoPoint, "Thing at " + x + "," + y, "Snippit..."); 
-                locationsOverlay.add(location);*/
-                
-                
-                //Toast.makeText(getApplicationContext(), "LongPress incoming...!", Toast.LENGTH_SHORT).show();
-                // TODO Auto-generated method stub
                 
             }
 

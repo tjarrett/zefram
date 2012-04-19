@@ -14,6 +14,11 @@ import com.viapx.zefram.*;
 import com.viapx.zefram.lib.Location;
 import com.viapx.zefram.lib.LocationEvent;
 
+/**
+ * Database helper class for creating connections to the database
+ * @author tjarrett
+ *
+ */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     /**

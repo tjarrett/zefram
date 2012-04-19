@@ -1,5 +1,10 @@
 package com.viapx.zefram.lib;
 
+/**
+ * Action associated with an event. Think of this as the message passed around when a user enters or leaves a location
+ * @author tjarrett
+ *
+ */
 public class LocationEventAction
 {
     /**
@@ -27,10 +32,14 @@ public class LocationEventAction
      */
     private String text;
     
+    /**
+     * Constructor
+     */
     public LocationEventAction()
     {
+        super();
         
-    }
+    }//end LocationEventAction
 
     public boolean isCustom()
     {
@@ -82,6 +91,4 @@ public class LocationEventAction
         this.text = text;
     }
     
-
-
 }//end LocationEventAction
