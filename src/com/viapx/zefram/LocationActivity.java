@@ -126,6 +126,11 @@ public class LocationActivity extends MapActivity
     private LocationsOverlay locationsOverlay;
     
     /**
+     * Whether or not we are showing the satellite view
+     */
+    private boolean satelliteView = false;
+    
+    /**
      * Our connection to the ZeframLocationRegistrationService
      */
     private ServiceConnection serviceConnection = new ServiceConnection()
@@ -178,24 +183,7 @@ public class LocationActivity extends MapActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-              //Get the radius (in feet) as an int by trying to parse it as an int
-                int radius;
-                
-                try {
-                    radius = Integer.parseInt(locationRadiusField.getText().toString());
-                    
-                } catch ( NumberFormatException nfe ) {
-                    Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
-                    //todo: show dialog
-                    return;
-                    
-                }
-                
-                location.setRadius(radius);
-                
-                if ( mapView != null ) {
-                    mapView.invalidate();
-                }    
+                updateMapViewRadius();  
                 
             }
             
@@ -221,25 +209,7 @@ public class LocationActivity extends MapActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
-                //Get the radius (in feet) as an int by trying to parse it as an int
-                int radius;
-                
-                try {
-                    radius = Integer.parseInt(locationRadiusField.getText().toString());
-                    
-                } catch ( NumberFormatException nfe ) {
-                    Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
-                    //todo: show dialog
-                    return;
-                    
-                }
-                
-                location.setRadius(radius);
-                
-                if ( mapView != null ) {
-                    mapView.invalidate();   
-                    
-                }                
+                updateMapViewRadius();
             }
             
         });
@@ -269,6 +239,19 @@ public class LocationActivity extends MapActivity
                 
             }
             
+        });
+        
+        //Hook up our satellite button
+        Button satelliteToggle = (Button)this.findViewById(R.id.map_satellite_button);
+        satelliteToggle.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v)
+            {
+                satelliteView = !satelliteView;
+                mapView.setSatellite(satelliteView);
+                
+            }
         });
 
     }//end onCreate
@@ -418,7 +401,7 @@ public class LocationActivity extends MapActivity
         mapView.getOverlays().add(locationsOverlay);
         
         //We never want satelitte mode
-        mapView.setSatellite(false);
+        mapView.setSatellite(satelliteView);
         
         if ( location.getLatitude() == 0 && location.getLongitude() == 0 ) {
             LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -800,8 +783,34 @@ public class LocationActivity extends MapActivity
         
     }//end showLocationEventActivity
     
+    /**
+     * 
+     */
     private void updateMapViewRadius()
     {
+        //Get the radius (in feet) as an int by trying to parse it as an int
+        int radius = 0;
+        String locationRadiusFieldText = locationRadiusField.getText().toString();
+        
+        try {
+            if ( !"".equals(locationRadiusFieldText) ) {
+                radius = Integer.parseInt(locationRadiusField.getText().toString());
+                
+            }
+            
+        } catch ( NumberFormatException nfe ) {
+            Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
+            //todo: show dialog
+            return;
+            
+        }
+        
+        location.setRadius(radius);
+        
+        if ( mapView != null ) {
+            mapView.invalidate();   
+            
+        }  
         
     }
     

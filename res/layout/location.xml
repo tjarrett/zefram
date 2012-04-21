@@ -24,20 +24,42 @@
             android:layout_height="wrap_content"
             android:text="@string/location_label"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-        
-        <com.google.android.maps.MapView
-            android:id="@+id/mapview"
+
+        <FrameLayout 
             android:layout_width="fill_parent"
-            android:layout_height="120dp"
-            android:apiKey="0RmcvHWXJEDQsRzl6umJCrNRcBxfSUl-PZ6mVMw"
-            android:clickable="true"
-            android:enabled="true" />
-        
-            <TextView
-                android:id="@+id/latitude_and_longtiude"
+            android:layout_height="fill_parent">
+            
+            <com.google.android.maps.MapView
+                android:id="@+id/mapview"
+                android:layout_width="fill_parent"
+                android:layout_height="120dp"
+                android:apiKey="0RmcvHWXJEDQsRzl6umJCrNRcBxfSUl-PZ6mVMw"
+                android:clickable="true"
+                android:enabled="true" />
+            
+            
+            <Button
+                android:id="@+id/map_satellite_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/radius_label" />
+                android:layout_gravity="top|right"
+                android:layout_marginTop="5dip"
+                android:layout_marginRight="5dip"
+            
+                android:padding="10dip"
+            
+                android:background="#beffffff"
+                android:textColor="#ff707070"
+    
+                android:text="@string/map_toggle_satellite"
+                />
+            </FrameLayout>
+        
+        <TextView
+            android:id="@+id/latitude_and_longtiude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radius_label" />
             
         <View 
            android:layout_width="fill_parent"
