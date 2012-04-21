@@ -31,6 +31,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -191,8 +193,53 @@ public class LocationActivity extends MapActivity
                 
                 location.setRadius(radius);
                 
-                mapView.invalidate();    
+                if ( mapView != null ) {
+                    mapView.invalidate();
+                }    
                 
+            }
+            
+        });
+        
+        //Listen to the text as it changes... 
+        locationRadiusField.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                //Get the radius (in feet) as an int by trying to parse it as an int
+                int radius;
+                
+                try {
+                    radius = Integer.parseInt(locationRadiusField.getText().toString());
+                    
+                } catch ( NumberFormatException nfe ) {
+                    Log.e(LocationListActivity.class.getName(), "Could not parse as int ", nfe);
+                    //todo: show dialog
+                    return;
+                    
+                }
+                
+                location.setRadius(radius);
+                
+                if ( mapView != null ) {
+                    mapView.invalidate();   
+                    
+                }                
             }
             
         });
@@ -752,5 +799,10 @@ public class LocationActivity extends MapActivity
         startActivity(i);
         
     }//end showLocationEventActivity
+    
+    private void updateMapViewRadius()
+    {
+        
+    }
     
 }//end LocationActivity
