@@ -166,6 +166,7 @@ public class ZeframActivity extends MapActivity
         // Let's lay over the user's current location
         userLocationOverlay = new MyLocationOverlay(this, mapView);
 
+        /*
         // When we first get a location fix, animate over to the user's location
         userLocationOverlay.runOnFirstFix(new Runnable()
         {
@@ -176,12 +177,10 @@ public class ZeframActivity extends MapActivity
 
             }// end run
 
-        });
+        });*/
 
         // Set the overlay to be included
         mapView.getOverlays().add(userLocationOverlay);
-
-        userLocationOverlay.enableMyLocation();
         
         //Get our drawable icon
         Drawable marker = getResources().getDrawable(R.drawable.better_marker_2);
@@ -200,7 +199,15 @@ public class ZeframActivity extends MapActivity
             
         }
         
-        Integer locationId = getIntent().getExtras().getInt("location_id");
+        Integer locationId = null;
+        
+        try {
+            locationId = getIntent().getExtras().getInt("location_id");
+            
+        } catch ( NullPointerException npe ) {
+            //swallow it
+        }
+        
         if ( locationId != null ) {
             //Load up location from the database
             try {
